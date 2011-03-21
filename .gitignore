@@ -1,0 +1,5 @@
+*ReSharper*
+*.gpState
+*.suo
+RdioSharp/bin*
+RdioSharp/obj*
