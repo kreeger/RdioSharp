@@ -187,8 +187,8 @@ namespace RdioSharp
         /// <param name="callbackUrl"></param>
         /// <returns>The signature base</returns>
         public static string GenerateSignatureBase(Uri url, string consumerKey, string token, string tokenSecret, string callbackUrl, string oAuthVerifier,
-                                            string httpMethod, string timeStamp, string nonce, string signatureType, out string normalizedUrl,
-                                            out string normalizedRequestParameters)
+                                                   string httpMethod, string timeStamp, string nonce, string signatureType, out string normalizedUrl,
+                                                   out string normalizedRequestParameters)
         {
             if (token == null)
                 token = string.Empty;

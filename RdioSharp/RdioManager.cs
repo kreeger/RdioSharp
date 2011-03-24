@@ -1,10 +1,12 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using RdioSharp.Models;
 
 using System.Web;
 using System;
+using System.Text;
 
 namespace RdioSharp
 {
@@ -14,23 +16,34 @@ namespace RdioSharp
     
     public class RdioManager : IRdioManager
     {
-        public string ConsumerKey { get; set; }
-        public string ConsumerSecret { get; set; }
-        public string CallBackUrl { get; set; }
+
+        #region Public properties.
+
+        public string ConsumerKey { get; private set; }
+        public string ConsumerSecret { get; private set; }
+        public string CallBackUrl { get; private set; }
+        public string RequestToken { get; private set; }
+        public string RequestTokenSecret { get; private set; }
+        public string LoginUrl { get; set; }
         public string AccessKey { get; private set; }
         public string AccessKeySecret { get; private set; }
         public string OAuthVerifier { get; private set; }
 
-        private string _requestToken;
-        private string _requestTokenSecret;
+        #endregion
+
+        #region Constants.
 
         private const string API_URL = "http://api.rdio.com/1/";
         private const string REQUEST_TOKEN_URL = "http://api.rdio.com/oauth/request_token";
         private const string ACCESS_TOKEN_URL = "http://api.rdio.com/oauth/access_token";
         private const string REQUEST_METHOD = "POST";
 
+        #endregion
+
+        #region Constructor.
+
         /// <summary>
-        /// NOTE: CAN I REPLICATE FUNCTIONALITY OF OAUTH.TOKEN IN OAUTH2?
+        /// NOTE: SHOULD I REPLICATE FUNCTIONALITY OF OAUTH.TOKEN IN OAUTH2?
         /// </summary>
         /// <param name="consumerKey"></param>
         /// <param name="consumerSecret"></param>
@@ -43,6 +56,10 @@ namespace RdioSharp
             CallBackUrl = !string.IsNullOrEmpty(callbackUrl) ? callbackUrl : "oob";
             SetCredentials(consumerKey, consumerSecret, accessKey, accessSecret);
         }
+
+        #endregion
+
+        #region Manager/OAuth management methods
 
         /// <summary>
         /// Sets credentials for the Rdio API manager.
@@ -71,11 +88,9 @@ namespace RdioSharp
         /// Get the link to Rdio's authorization page for this application.
         /// </summary>
         /// <returns>The url with a valid request token, or a null string.</returns>
-        public void GetTokenAndLoginUrl(out string token, out string loginUrl)
+        public void GenerateRequestTokenAndLoginUrl()
         {
-            token = null;
-            loginUrl = null;
-            var data = new NameValueCollection{{"oauth_callback", CallBackUrl}};
+            var data = new NameValueCollection { { "oauth_callback", CallBackUrl } };
 
             var response = MakeWebRequest(REQUEST_TOKEN_URL, data);
             if (response.Length > 0)
@@ -89,9 +104,9 @@ namespace RdioSharp
 
                 if (qs["oauth_token"] != null)
                 {
-                    loginUrl = string.Format("{0}?oauth_token={1}", qs["login_url"], qs["oauth_token"]);
-                    _requestToken = token = qs["oauth_token"];
-                    _requestTokenSecret = qs["oauth_token_secret"];
+                    LoginUrl = string.Format("{0}?oauth_token={1}", qs["login_url"], qs["oauth_token"]);
+                    RequestToken = qs["oauth_token"];
+                    RequestTokenSecret = qs["oauth_token_secret"];
                 }
             }
         }
@@ -117,6 +132,10 @@ namespace RdioSharp
                 SetCredentials(accessKey: qs["oauth_token"], accessSecret: qs["oauth_token_secret"]);
         }
 
+        #endregion
+        
+        #region Rdio API methods
+
         /// <summary>
         /// Find a user either by email address or by their username.
         /// Exactly one of email or vanityName must be supplied.
@@ -124,19 +143,42 @@ namespace RdioSharp
         /// <param name="email">An email address.</param>
         /// <param name="vanityName">A username.</param>
         /// <returns></returns>
-        public User FindUser(string email = null, string vanityName = null)
+        public string FindUser(string email = null, string vanityName = null)
         {
             // Ugly. Fix it soon.
-            var postData = new NameValueCollection {{"method", "findUser"}};
+            var postData = new NameValueCollection { { "method", "findUser" } };
             if (email != null) postData.Add("email", email);
             else if (vanityName != null) postData.Add("vanityName", vanityName);
 
             // This will be in... JSON?
-            var result = MakeWebRequest(API_URL, postData);
-
-            Console.WriteLine(result);
-            return null;
+            return MakeWebRequest(API_URL, postData);
         }
+
+        /// <summary>
+        /// Get information about the currently logged in user.
+        /// </summary>
+        /// <param name="extras">An optional list of extra fields to send in.</param>
+        /// <returns></returns>
+        public string CurrentUser(IList<string> extras = null)
+        {
+            // Ugly. Fix it soon.
+            var postData = new NameValueCollection { { "method", "currentUser" } };
+            if (extras != null && extras.Count > 0)
+            {
+                var builder = new StringBuilder();
+                for (var i = 0; i < extras.Count; i++)
+                {
+                    builder.Append(extras[i]);
+                    if (i != extras.Count - 1) builder.Append(',');
+                }
+                postData.Add("extras", builder.ToString());
+            }
+
+            // This will be in... JSON?
+            return MakeWebRequest(API_URL, postData);
+        }
+
+        #endregion
 
         #region Private methods
 
@@ -180,15 +222,10 @@ namespace RdioSharp
             var timeStamp = OAuth.GenerateTimeStamp();
 
             // Generate Signature
-            string sig;
             // If we have an access key...
-            if (AccessKeySecret != null)
-                sig = OAuth.GenerateSignature(uri, ConsumerKey, ConsumerSecret, AccessKey, AccessKeySecret, CallBackUrl, OAuthVerifier,
-                                        REQUEST_METHOD, timeStamp, nonce, out outUrl, out querystring);
-            // Otherwise, we have a request token or nothing
-            else
-                sig = OAuth.GenerateSignature(uri, ConsumerKey, ConsumerSecret, _requestToken, _requestTokenSecret, CallBackUrl, OAuthVerifier,
-                                        REQUEST_METHOD, timeStamp, nonce, out outUrl, out querystring);
+            var sig = OAuth.GenerateSignature(uri, ConsumerKey, ConsumerSecret, AccessKey ?? RequestToken,
+                                              AccessKeySecret ?? RequestTokenSecret, CallBackUrl, OAuthVerifier,
+                                              REQUEST_METHOD, timeStamp, nonce, out outUrl, out querystring);
 
             querystring += "&oauth_signature=" + OAuth.UrlEncode(sig);
 

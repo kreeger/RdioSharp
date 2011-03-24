@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Artist.cs" />
+    <Compile Include="Models\RdioField.cs" />
     <Compile Include="Models\RdioObject.cs" />
     <Compile Include="Models\RdioType.cs" />
     <Compile Include="Models\User.cs" />
