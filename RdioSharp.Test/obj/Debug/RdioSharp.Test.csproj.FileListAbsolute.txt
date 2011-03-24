@@ -1,0 +1,7 @@
+C:\Users\bkreeger\Development\dotNET\RdioSharp\RdioSharp.Test\bin\Debug\RdioSharp.Test.dll
+C:\Users\bkreeger\Development\dotNET\RdioSharp\RdioSharp.Test\bin\Debug\RdioSharp.Test.pdb
+C:\Users\bkreeger\Development\dotNET\RdioSharp\RdioSharp.Test\bin\Debug\RdioSharp.dll
+C:\Users\bkreeger\Development\dotNET\RdioSharp\RdioSharp.Test\bin\Debug\RdioSharp.pdb
+C:\Users\bkreeger\Development\dotNET\RdioSharp\RdioSharp.Test\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\bkreeger\Development\dotNET\RdioSharp\RdioSharp.Test\obj\Debug\RdioSharp.Test.dll
+C:\Users\bkreeger\Development\dotNET\RdioSharp\RdioSharp.Test\obj\Debug\RdioSharp.Test.pdb
