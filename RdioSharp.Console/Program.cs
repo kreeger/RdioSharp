@@ -5,10 +5,10 @@ namespace RdioSharp.Console
     {
         static void Main(string[] args)
         {
-            var consumerKey = "";
-            var consumerSecret = "";
-            var accessKey = "";
-            var accessSecret = "";
+            var consumerKey = Constants.ConsumerKey;
+            var consumerSecret = Constants.ConsumerSecret;
+            var accessKey = Constants.AccessKey;
+            var accessSecret = Constants.AccessSecret;
             var _manager = new RdioManager(consumerKey, consumerSecret, accessKey, accessSecret);
 
             System.Console.WriteLine("Finding user.");
