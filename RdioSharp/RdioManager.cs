@@ -28,6 +28,7 @@ namespace RdioSharp
         public string AccessKey { get; private set; }
         public string AccessKeySecret { get; private set; }
         public string OAuthVerifier { get; private set; }
+        public bool IsAuthorized { get { return !string.IsNullOrEmpty(RequestTokenSecret); } }
 
         #endregion
 
