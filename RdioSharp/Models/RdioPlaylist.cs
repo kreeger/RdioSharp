@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace RdioSharp.Models
 {
@@ -37,6 +38,24 @@ namespace RdioSharp.Models
             LastUpdated = lastUpdated;
             ShortUrl = shortUrl;
             EmbedUrl = embedUrl;
+        }
+
+        public RdioPlaylist(IDictionary<string, object> dictionary)
+        {
+            Key = (string)dictionary["key"];
+            Url = (string)dictionary["url"];
+            Icon = (string)dictionary["icon"];
+            BaseIcon = (string)dictionary["baseIcon"];
+            RdioType = (RdioType)dictionary["rdioType"];
+            Name = (string)dictionary["name"];
+            TrackCount = (int) dictionary["trackCount"];
+            OwnerName = (string)dictionary["ownerName"];
+            OwnerUrl = (string)dictionary["ownerKey"];
+            OwnerKey = (string)dictionary["ownerUrl"];
+            OwnerIcon = (string)dictionary["ownerIcon"];
+            LastUpdated = (DateTime) dictionary["lastUpdated"];
+            ShortUrl = (string)dictionary["shortUrl"];
+            EmbedUrl = (string)dictionary["embedUrl"];
         }
     }
 }
