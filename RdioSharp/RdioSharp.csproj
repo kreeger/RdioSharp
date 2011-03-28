@@ -44,11 +44,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Artist.cs" />
-    <Compile Include="Models\RdioField.cs" />
-    <Compile Include="Models\RdioObject.cs" />
+    <Compile Include="Models\IRdioObject.cs" />
+    <Compile Include="Models\RdioActivityItem.cs" />
+    <Compile Include="Models\RdioActivityStream.cs" />
+    <Compile Include="Models\RdioAlbum.cs" />
+    <Compile Include="Models\RdioArtist.cs" />
+    <Compile Include="Models\IRdioMusicObject.cs" />
+    <Compile Include="Models\RdioPlaylist.cs" />
+    <Compile Include="Models\RdioSearchResult.cs" />
+    <Compile Include="Models\RdioTrack.cs" />
     <Compile Include="Models\RdioType.cs" />
-    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\RdioUpdateType.cs" />
+    <Compile Include="Models\RdioUser.cs" />
     <Compile Include="OAuth.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RdioManager.cs" />
