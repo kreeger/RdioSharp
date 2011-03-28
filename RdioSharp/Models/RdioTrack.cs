@@ -59,5 +59,34 @@ namespace RdioSharp.Models
             CanDownloadAlbumOnly = canDownloadAlbumOnly;
             PlayCount = playCount;
         }
+
+        public RdioTrack(IDictionary<string, object> dictionary)
+        {
+            Key = (string)dictionary["key"];
+            Url = (string)dictionary["url"];
+            Icon = (string)dictionary["icon"];
+            BaseIcon = (string)dictionary["baseIcon"];
+            RdioType = (RdioType)dictionary["rdioType"];
+            Name = (string)dictionary["name"];
+            ArtistName = (string)dictionary["artistName"];
+            ArtistUrl = (string)dictionary["artistUrl"];
+            ArtistKey = (string)dictionary["artistKey"];
+            IsExplicit = (bool)dictionary["isExplicit"];
+            IsClean = (bool)dictionary["isClean"];
+            Price = (decimal)dictionary["price"];
+            CanStream = (bool)dictionary["canStream"];
+            CanSample = (bool)dictionary["canSample"];
+            CanTether = (bool)dictionary["canTether"];
+            ShortUrl = (string)dictionary["shortUrl"];
+            EmbedUrl = (string)dictionary["embedUrl"];
+            Duration = (TimeSpan)dictionary["duration"];
+            AlbumArtistName = (string)dictionary["albumArtistName"];
+            AlbumArtistKey = (string)dictionary["albumArtistKey"];
+            CanDownload = (bool)dictionary["canDownload"];
+            CanDownloadAlbumOnly = (bool)dictionary["canDownloadAlbumOnly"];
+            object playCount;
+            if (dictionary.TryGetValue("trackKeys", out playCount))
+                PlayCount = (int)playCount;
+        }
     }
 }

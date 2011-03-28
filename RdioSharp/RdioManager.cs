@@ -416,12 +416,33 @@ namespace RdioSharp
                 case RdioType.Playlist:
                     break;
                 case RdioType.Track:
+                    JToken playCount;
+                    result.Add("name", (string)parsed["name"]);
+                    result.Add("artistName", (string)parsed["artist"]);
+                    result.Add("artistUrl", (string)parsed["artistUrl"]);
+                    result.Add("artistKey", (string)parsed["artistKey"]);
+                    result.Add("isExplicit", (bool)parsed["isExplicit"]);
+                    result.Add("isClean", (bool)parsed["isClean"]);
+                    result.Add("price", Decimal.Parse((string)parsed["price"]));
+                    result.Add("canStream", (bool)parsed["canStream"]);
+                    result.Add("canSample", (bool)parsed["canSample"]);
+                    result.Add("canTether", (bool)parsed["canTether"]);
+                    result.Add("shortUrl", (string)parsed["shortUrl"]);
+                    result.Add("embedUrl", (string)parsed["embedUrl"]);
+                    result.Add("duration", new TimeSpan(0, 0, (int)parsed["duration"]));
+                    result.Add("albumArtistName", (string)parsed["albumArtistName"]);
+                    result.Add("albumArtistKey", (string)parsed["albumArtistKey"]);
+                    result.Add("canDownload", (bool)parsed["canDownload"]);
+                    result.Add("canDownloadAlbumOnly", (bool)parsed["canDownloadAlbumOnly"]);
+                    if (parsed.TryGetValue("playCount", out playCount))
+                        result.Add("playCount", (int)playCount);
+                    rdioObject = new RdioTrack(result);
                     break;
                 case RdioType.User:
                     JToken username, lastSongPlayed, displayName, trackCount, lastSongPlayTime;
                     result.Add("firstName", (string)parsed["firstName"]);
                     result.Add("lastName", (string)parsed["lastName"]);
-                    result.Add("libraryVersion", (int)parsed["libraryVersion"]);
+                    result.Add("libraryVersion", (long)parsed["libraryVersion"]);
                     result.Add("gender", (string)parsed["gender"]);
                     if (parsed.TryGetValue("username", out username))
                         result.Add("username", (string)username);

@@ -13,7 +13,7 @@ namespace RdioSharp.Models
         public RdioType RdioType { get; private set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public int LibraryVersion { get; set; }
+        public long LibraryVersion { get; set; }
         public string Gender { get; set; }
         public string Username { get; set; }
         public string LastSongPlayed { get; set; }
@@ -22,7 +22,7 @@ namespace RdioSharp.Models
         public DateTime LastSongPlayTime { get; set; }
 
         private RdioUser(string key, string url, string icon, string baseIcon, RdioType rdioType,
-                      string firstName, string lastName, int libraryVersion, string gender,
+                      string firstName, string lastName, long libraryVersion, string gender,
                       string username = null, string lastSongPlayed = null, string displayName = null,
                       int trackCount = -1, DateTime lastSongPlayTime = new DateTime())
         {
@@ -51,7 +51,7 @@ namespace RdioSharp.Models
             RdioType = (RdioType)dictionary["rdioType"];
             FirstName = (string)dictionary["firstName"];
             LastName = (string)dictionary["lastName"];
-            LibraryVersion = (int)dictionary["libraryVersion"];
+            LibraryVersion = (long)dictionary["libraryVersion"];
             Gender = (string)dictionary["gender"];
             object username, lastSongPlayed, displayName, trackCount, lastSongPlayTime;
             if (dictionary.TryGetValue("username", out username))

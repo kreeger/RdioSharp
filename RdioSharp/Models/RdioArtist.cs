@@ -1,4 +1,6 @@
-﻿namespace RdioSharp.Models
+﻿using System.Collections.Generic;
+
+namespace RdioSharp.Models
 {
     public class RdioArtist : IRdioObject
     {
@@ -27,6 +29,22 @@
             HasRadio = hasRadio;
             ShortUrl = shortUrl;
             AlbumCount = albumCount;
+        }
+
+        public RdioArtist(IDictionary<string, object> dictionary)
+        {
+            Key = (string)dictionary["key"];
+            Url = (string)dictionary["url"];
+            Icon = (string)dictionary["icon"];
+            BaseIcon = (string)dictionary["baseIcon"];
+            RdioType = (RdioType)dictionary["rdioType"];
+            Name = (string)dictionary["name"];
+            TrackCount = (int)dictionary["trackCount"];
+            HasRadio = (bool)dictionary["hasRadio"];
+            ShortUrl = (string)dictionary["shortUrl"];
+            object albumCount;
+            if (dictionary.TryGetValue("albumCount", out albumCount))
+                AlbumCount = (int)albumCount;
         }
     }
 }
