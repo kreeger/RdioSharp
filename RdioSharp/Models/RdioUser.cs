@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace RdioSharp.Models
 {
@@ -12,7 +13,7 @@ namespace RdioSharp.Models
         public RdioType RdioType { get; private set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string LibraryVersion { get; set; }
+        public int LibraryVersion { get; set; }
         public string Gender { get; set; }
         public string Username { get; set; }
         public string LastSongPlayed { get; set; }
@@ -21,7 +22,7 @@ namespace RdioSharp.Models
         public DateTime LastSongPlayTime { get; set; }
 
         private RdioUser(string key, string url, string icon, string baseIcon, RdioType rdioType,
-                      string firstName, string lastName, string libraryVersion, string gender,
+                      string firstName, string lastName, int libraryVersion, string gender,
                       string username = null, string lastSongPlayed = null, string displayName = null,
                       int trackCount = -1, DateTime lastSongPlayTime = new DateTime())
         {
@@ -39,6 +40,30 @@ namespace RdioSharp.Models
             DisplayName = displayName;
             TrackCount = trackCount;
             LastSongPlayTime = lastSongPlayTime;
+        }
+
+        public RdioUser(IDictionary<string, object> dictionary)
+        {
+            Key = (string)dictionary["key"];
+            Url = (string)dictionary["url"];
+            Icon = (string)dictionary["icon"];
+            BaseIcon = (string)dictionary["baseIcon"];
+            RdioType = (RdioType)dictionary["rdioType"];
+            FirstName = (string)dictionary["firstName"];
+            LastName = (string)dictionary["lastName"];
+            LibraryVersion = (int)dictionary["libraryVersion"];
+            Gender = (string)dictionary["gender"];
+            object username, lastSongPlayed, displayName, trackCount, lastSongPlayTime;
+            if (dictionary.TryGetValue("username", out username))
+                Username = (string)username;
+            if (dictionary.TryGetValue("lastSongPlayed", out lastSongPlayed))
+                LastSongPlayed = (string)lastSongPlayed;
+            if (dictionary.TryGetValue("displayName", out displayName))
+                DisplayName = (string)displayName;
+            if (dictionary.TryGetValue("trackCount", out trackCount))
+                TrackCount = (int)trackCount;
+            if (dictionary.TryGetValue("lastSongPlayTime", out lastSongPlayTime))
+                LastSongPlayTime = (DateTime) lastSongPlayTime;
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RdioSharp.Models
 {
@@ -51,6 +53,32 @@ namespace RdioSharp.Models
             Duration = duration;
             ReleaseDate = releaseDate;
             TrackKeys = trackKeys;
+        }
+
+        public RdioAlbum(IDictionary<string, object> dictionary)
+        {
+            Key = (string)dictionary["key"];
+            Url = (string)dictionary["url"];
+            Icon = (string)dictionary["icon"];
+            BaseIcon = (string)dictionary["baseIcon"];
+            RdioType = (RdioType)dictionary["rdioType"];
+            Name = (string)dictionary["name"];
+            ArtistName = (string)dictionary["artistName"];
+            ArtistUrl = (string)dictionary["artistUrl"];
+            ArtistKey = (string)dictionary["artistKey"];
+            IsExplicit = (bool)dictionary["isExplicit"];
+            IsClean = (bool)dictionary["isClean"];
+            Price = (decimal)dictionary["price"];
+            CanStream = (bool)dictionary["canStream"];
+            CanSample = (bool)dictionary["canSample"];
+            CanTether = (bool)dictionary["canTether"];
+            ShortUrl = (string)dictionary["shortUrl"];
+            EmbedUrl = (string)dictionary["embedUrl"];
+            Duration = (TimeSpan)dictionary["duration"];
+            ReleaseDate = (DateTime)dictionary["releaseDate"];
+            object trackKeys;
+            if (dictionary.TryGetValue("trackKeys", out trackKeys))
+                TrackKeys = (IList<string>)trackKeys;
         }
     }
 }

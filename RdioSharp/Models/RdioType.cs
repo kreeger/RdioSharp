@@ -6,6 +6,7 @@
         Album,
         Track,
         Playlist,
-        User
+        User,
+        Unknown
     }
 }

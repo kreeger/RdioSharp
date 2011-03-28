@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Net;
-using RdioSharp.Models;
-
 using System.Web;
-using System;
-using System.Text;
+
+using Newtonsoft.Json.Linq;
+
+using RdioSharp.Models;
 
 namespace RdioSharp
 {
@@ -28,7 +30,7 @@ namespace RdioSharp
         public string AccessKey { get; private set; }
         public string AccessKeySecret { get; private set; }
         public string OAuthVerifier { get; private set; }
-        public bool IsAuthorized { get { return !string.IsNullOrEmpty(RequestTokenSecret); } }
+        public bool IsAuthorized { get { return !string.IsNullOrEmpty(AccessKeySecret); } }
 
         #endregion
 
@@ -134,8 +136,24 @@ namespace RdioSharp
         }
 
         #endregion
-        
+
         #region Rdio API methods
+
+        /// <summary>
+        /// Get information about the currently logged in user.
+        /// </summary>
+        /// <param name="extras">An optional list of extra fields to send in.</param>
+        /// <returns></returns>
+        public RdioUser CurrentUser(IList<string> extras = null)
+        {
+            var postData = new NameValueCollection { { "method", "currentUser" } };
+
+            if (extras != null && extras.Count > 0) postData.Add("extras", string.Join(",", extras));
+
+            // This will be in... JSON?
+            var result = MakeWebRequest(API_URL, postData);
+            return ParseRdioObjectString(result) as RdioUser;
+        }
 
         /// <summary>
         /// Find a user either by email address or by their username.
@@ -144,39 +162,61 @@ namespace RdioSharp
         /// <param name="email">An email address.</param>
         /// <param name="vanityName">A username.</param>
         /// <returns></returns>
-        public string FindUser(string email = null, string vanityName = null)
+        public RdioUser FindUser(string email = null, string vanityName = null)
         {
-            // Ugly. Fix it soon.
-            var postData = new NameValueCollection { { "method", "findUser" } };
+            var postData = new NameValueCollection {{"method", "findUser"}};
             if (email != null) postData.Add("email", email);
             else if (vanityName != null) postData.Add("vanityName", vanityName);
 
             // This will be in... JSON?
-            return MakeWebRequest(API_URL, postData);
+            var result = MakeWebRequest(API_URL, postData);
+            return ParseRdioObjectString(result) as RdioUser;
         }
 
         /// <summary>
-        /// Get information about the currently logged in user.
+        /// Fetch one or more objects from Rdio.
         /// </summary>
+        /// <param name="keys">A list of keys for the objects to fetch.</param>
         /// <param name="extras">An optional list of extra fields to send in.</param>
         /// <returns></returns>
-        public string CurrentUser(IList<string> extras = null)
+        public IList<IRdioObject> Get(IList<string> keys, IList<string> extras = null)
         {
-            // Ugly. Fix it soon.
-            var postData = new NameValueCollection { { "method", "currentUser" } };
-            if (extras != null && extras.Count > 0)
-            {
-                var builder = new StringBuilder();
-                for (var i = 0; i < extras.Count; i++)
-                {
-                    builder.Append(extras[i]);
-                    if (i != extras.Count - 1) builder.Append(',');
-                }
-                postData.Add("extras", builder.ToString());
-            }
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "get"},
+                                   {"keys", string.Join(",", keys)}
+                               };
+            if (extras != null && extras.Count > 0) postData.Add("extras", string.Join(",", extras));
 
             // This will be in... JSON?
-            return MakeWebRequest(API_URL, postData);
+            var result = MakeWebRequest(API_URL, postData);
+            return ParseRdioObjectListString(result);
+        }
+
+        /// <summary>
+        /// Search for artists, albums, tracks, users or all kinds of objects.
+        /// </summary>
+        /// <param name="query">The search query.</param>
+        /// <param name="types">Types to include in results.</param>
+        /// <param name="neverOr">Optional; false disables an "OR" search fallback; true allows both "AND" and "OR" searches.</param>
+        /// <param name="extras">An optional list of extra fields to send in.</param>
+        /// <param name="start">The optional offset of the first result to return.</param>
+        /// <param name="count">The optional maximum number of results to return.</param>
+        /// <returns></returns>
+        public string Search(string query, IList<RdioType> types, bool neverOr = true, IList<string> extras = null, int start = 0, int count = 0)
+        {
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "search"},
+                                   {"query", query},
+                                   {"types", string.Join(",", types)}
+                               };
+            if (!neverOr) postData.Add("never_or", neverOr.ToString().ToLower());
+            if (extras != null && extras.Count > 0) postData.Add("extras", string.Join(",", extras));
+            if (start > 0) postData.Add("start", start.ToString());
+            if (count > 0) postData.Add("count", count.ToString());
+            var result = MakeWebRequest(API_URL, postData);
+            return result;
         }
 
         #endregion
@@ -293,6 +333,113 @@ namespace RdioSharp
 
             // NOTE: MAKE THIS A DICT!
             return responseData;
+        }
+
+        /// <summary>
+        /// Determines which kind of <see cref="RdioType"/> to return.
+        /// </summary>
+        private static RdioType ParseRdioType(string input)
+        {
+            switch (input)
+            {
+                case "r": return RdioType.Artist;
+                case "a": return RdioType.Album;
+                case "t": return RdioType.Track;
+                case "p": return RdioType.Playlist;
+                case "s": return RdioType.User;
+                default: return RdioType.Unknown;
+            }
+        }
+
+        private static IList<IRdioObject> ParseRdioObjectListString(string input)
+        {
+            var parsed = JObject.Parse(input);
+            var status = (string)parsed["status"];
+            if (status != "ok") return null;
+
+            parsed = (JObject)parsed["result"];
+
+            IList<IRdioObject> list = new List<IRdioObject>();
+            foreach (var kvp in parsed)
+            {
+                list.Add(ParseRdioObjectString(kvp.Value.ToString()));
+            }
+
+            return list;
+        }
+
+        private static IRdioObject ParseRdioObjectString(string input)
+        {
+            IRdioObject rdioObject = null;
+            var parsed = JObject.Parse(input);
+            var status = (string)parsed["status"];
+            if (status != null)
+            {
+                if (status != "ok") return null;
+                parsed = (JObject)parsed["result"];
+            }
+
+            var rdioType = ParseRdioType((string)parsed["type"]);
+            var result = new Dictionary<string, object>
+                             {
+                                 { "key", (string) parsed["key"] },
+                                 { "url", (string)parsed["url"] },
+                                 { "icon", (string)parsed["icon"] },
+                                 { "baseIcon", (string)parsed["baseIcon"] },
+                                 { "rdioType", rdioType }
+                             };
+
+            switch (rdioType)
+            {
+                case RdioType.Album:
+                    JToken trackKeys;
+                    result.Add("name", (string)parsed["name"]);
+                    result.Add("artistName", (string)parsed["artist"]);
+                    result.Add("artistUrl", (string)parsed["artistUrl"]);
+                    result.Add("artistKey", (string)parsed["artistKey"]);
+                    result.Add("isExplicit", (bool)parsed["isExplicit"]);
+                    result.Add("isClean", (bool)parsed["isClean"]);
+                    result.Add("price", Decimal.Parse((string)parsed["price"]));
+                    result.Add("canStream", (bool)parsed["canStream"]);
+                    result.Add("canSample", (bool)parsed["canSample"]);
+                    result.Add("canTether", (bool)parsed["canTether"]);
+                    result.Add("shortUrl", (string)parsed["shortUrl"]);
+                    result.Add("embedUrl", (string)parsed["embedUrl"]);
+                    result.Add("duration", new TimeSpan(0, 0, (int) parsed["duration"]));
+                    result.Add("releaseDate", DateTime.Parse((string)parsed["releaseDate"]));
+                    if (parsed.TryGetValue("trackKeys", out trackKeys))
+                        result.Add("trackKeys", trackKeys.Select(item => (string)item).ToList());
+                    rdioObject = new RdioAlbum(result);
+                    break;
+                case RdioType.Artist:
+                    break;
+                case RdioType.Playlist:
+                    break;
+                case RdioType.Track:
+                    break;
+                case RdioType.User:
+                    JToken username, lastSongPlayed, displayName, trackCount, lastSongPlayTime;
+                    result.Add("firstName", (string)parsed["firstName"]);
+                    result.Add("lastName", (string)parsed["lastName"]);
+                    result.Add("libraryVersion", (int)parsed["libraryVersion"]);
+                    result.Add("gender", (string)parsed["gender"]);
+                    if (parsed.TryGetValue("username", out username))
+                        result.Add("username", (string)username);
+                    if (parsed.TryGetValue("lastSongPlayed", out lastSongPlayed))
+                        result.Add("lastSongPlayed", (string)lastSongPlayed);
+                    if (parsed.TryGetValue("displayName", out displayName))
+                        result.Add("displayName", (string)displayName);
+                    if (parsed.TryGetValue("trackCount", out trackCount))
+                        result.Add("trackCount", (int)trackCount);
+                    if (parsed.TryGetValue("lastSongPlayTime", out lastSongPlayTime))
+                        result.Add("lastSongPlayTime", (DateTime)lastSongPlayTime);
+                    rdioObject = new RdioUser(result);
+                    break;
+                default:
+                    break;
+            }
+
+            return rdioObject;
         }
 
         #endregion
