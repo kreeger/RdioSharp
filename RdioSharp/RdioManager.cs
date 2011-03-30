@@ -80,11 +80,9 @@ namespace RdioSharp
                 ConsumerSecret = consumerSecret;
             }
 
-            if (!string.IsNullOrEmpty(accessKey) && !string.IsNullOrEmpty(accessSecret))
-            {
-                AccessKey = accessKey;
-                AccessKeySecret = accessSecret;
-            }
+            if (string.IsNullOrEmpty(accessKey) || string.IsNullOrEmpty(accessSecret)) return;
+            AccessKey = accessKey;
+            AccessKeySecret = accessSecret;
         }
 
         /// <summary>
@@ -96,22 +94,20 @@ namespace RdioSharp
             var data = new NameValueCollection { { "oauth_callback", CallBackUrl } };
 
             var response = MakeWebRequest(REQUEST_TOKEN_URL, data);
-            if (response.Length > 0)
-            {
-                //response contains token and token secret.  We only need the token.
-                var qs = HttpUtility.ParseQueryString(response);
+            if (response.Length <= 0) return;
 
-                if (qs["oauth_callback_confirmed"] != null)
-                    if (qs["oauth_callback_confirmed"] != "true")
-                        throw new Exception("OAuth callback not confirmed.");
+            //response contains token and token secret.  We only need the token.
+            var qs = HttpUtility.ParseQueryString(response);
 
-                if (qs["oauth_token"] != null)
-                {
-                    LoginUrl = string.Format("{0}?oauth_token={1}", qs["login_url"], qs["oauth_token"]);
-                    RequestToken = qs["oauth_token"];
-                    RequestTokenSecret = qs["oauth_token_secret"];
-                }
-            }
+            if (qs["oauth_callback_confirmed"] != null)
+                if (qs["oauth_callback_confirmed"] != "true")
+                    throw new Exception("OAuth callback not confirmed.");
+
+            if (qs["oauth_token"] == null) return;
+
+            LoginUrl = string.Format("{0}?oauth_token={1}", qs["login_url"], qs["oauth_token"]);
+            RequestToken = qs["oauth_token"];
+            RequestTokenSecret = qs["oauth_token_secret"];
         }
 
         /// <summary>
@@ -152,7 +148,7 @@ namespace RdioSharp
 
             // This will be in... JSON?
             var result = MakeWebRequest(API_URL, postData);
-            return ParseRdioObjectString(result) as RdioUser;
+            return ParseJSONStringToRdioObject(result) as RdioUser;
         }
 
         /// <summary>
@@ -170,7 +166,7 @@ namespace RdioSharp
 
             // This will be in... JSON?
             var result = MakeWebRequest(API_URL, postData);
-            return ParseRdioObjectString(result) as RdioUser;
+            return ParseJSONStringToRdioObject(result) as RdioUser;
         }
 
         /// <summary>
@@ -179,7 +175,7 @@ namespace RdioSharp
         /// <param name="keys">A list of keys for the objects to fetch.</param>
         /// <param name="extras">An optional list of extra fields to send in.</param>
         /// <returns></returns>
-        public IList<IRdioObject> Get(IList<string> keys, IList<string> extras = null)
+        public IEnumerable<IRdioObject> Get(IEnumerable<string> keys, IList<string> extras = null)
         {
             var postData = new NameValueCollection
                                {
@@ -190,7 +186,7 @@ namespace RdioSharp
 
             // This will be in... JSON?
             var result = MakeWebRequest(API_URL, postData);
-            return ParseRdioObjectListString(result);
+            return ParseJSONListStringToRdioObjectList(result);
         }
 
         /// <summary>
@@ -331,7 +327,6 @@ namespace RdioSharp
                 }
             }
 
-            // NOTE: MAKE THIS A DICT!
             return responseData;
         }
 
@@ -351,7 +346,7 @@ namespace RdioSharp
             }
         }
 
-        private static IList<IRdioObject> ParseRdioObjectListString(string input)
+        private static IEnumerable<IRdioObject> ParseJSONListStringToRdioObjectList(string input)
         {
             var parsed = JObject.Parse(input);
             var status = (string)parsed["status"];
@@ -359,16 +354,16 @@ namespace RdioSharp
 
             parsed = (JObject)parsed["result"];
 
-            IList<IRdioObject> list = new List<IRdioObject>();
+            var list = new List<IRdioObject>();
             foreach (var kvp in parsed)
             {
-                list.Add(ParseRdioObjectString(kvp.Value.ToString()));
+                list.Add(ParseJSONStringToRdioObject(kvp.Value.ToString()));
             }
 
             return list;
         }
 
-        private static IRdioObject ParseRdioObjectString(string input)
+        private static IRdioObject ParseJSONStringToRdioObject(string input)
         {
             IRdioObject rdioObject = null;
             var parsed = JObject.Parse(input);
@@ -394,7 +389,7 @@ namespace RdioSharp
                 case RdioType.Album:
                     JToken trackKeys;
                     result.Add("name", (string)parsed["name"]);
-                    result.Add("artistName", (string)parsed["artist"]);
+                    result.Add("artist", (string)parsed["artist"]);
                     result.Add("artistUrl", (string)parsed["artistUrl"]);
                     result.Add("artistKey", (string)parsed["artistKey"]);
                     result.Add("isExplicit", (bool)parsed["isExplicit"]);
@@ -412,15 +407,36 @@ namespace RdioSharp
                     rdioObject = new RdioAlbum(result);
                     break;
                 case RdioType.Artist:
+                    JToken albumCount;
+                    result.Add("name", (string)parsed["name"]);
+                    result.Add("length", (int)parsed["length"]);
+                    result.Add("hasRadio", (bool)parsed["hasRadio"]);
+                    result.Add("shortUrl", (string)parsed["shortUrl"]);
+                    if (parsed.TryGetValue("albumCount", out albumCount))
+                        result.Add("albumCount", (int)albumCount);
+                    rdioObject = new RdioArtist(result);
                     break;
                 case RdioType.Playlist:
+                    result.Add("name", (string)parsed["name"]);
+                    result.Add("length", (int)parsed["length"]);
+                    result.Add("owner", (string)parsed["owner"]);
+                    result.Add("ownerUrl", (string)parsed["ownerUrl"]);
+                    result.Add("ownerKey", (string)parsed["ownerKey"]);
+                    result.Add("ownerIcon", (string)parsed["ownerIcon"]);
+                    result.Add("lastUpdated", DateTime.Parse((string)parsed["lastUpdated"]));
+                    result.Add("shortUrl", (string)parsed["shortUrl"]);
+                    result.Add("embedUrl", (string)parsed["embedUrl"]);
+                    rdioObject = new RdioPlaylist(result);
                     break;
                 case RdioType.Track:
                     JToken playCount;
                     result.Add("name", (string)parsed["name"]);
-                    result.Add("artistName", (string)parsed["artist"]);
+                    result.Add("artist", (string)parsed["artist"]);
                     result.Add("artistUrl", (string)parsed["artistUrl"]);
                     result.Add("artistKey", (string)parsed["artistKey"]);
+                    result.Add("album", (string)parsed["album"]);
+                    result.Add("albumUrl", (string)parsed["albumUrl"]);
+                    result.Add("albumKey", (string)parsed["albumKey"]);
                     result.Add("isExplicit", (bool)parsed["isExplicit"]);
                     result.Add("isClean", (bool)parsed["isClean"]);
                     result.Add("price", Decimal.Parse((string)parsed["price"]));

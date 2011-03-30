@@ -63,7 +63,7 @@ namespace RdioSharp.Models
             BaseIcon = (string)dictionary["baseIcon"];
             RdioType = (RdioType)dictionary["rdioType"];
             Name = (string)dictionary["name"];
-            ArtistName = (string)dictionary["artistName"];
+            ArtistName = (string)dictionary["artist"];
             ArtistUrl = (string)dictionary["artistUrl"];
             ArtistKey = (string)dictionary["artistKey"];
             IsExplicit = (bool)dictionary["isExplicit"];

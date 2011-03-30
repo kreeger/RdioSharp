@@ -39,7 +39,7 @@ namespace RdioSharp.Models
             BaseIcon = (string)dictionary["baseIcon"];
             RdioType = (RdioType)dictionary["rdioType"];
             Name = (string)dictionary["name"];
-            TrackCount = (int)dictionary["trackCount"];
+            TrackCount = (int)dictionary["length"];
             HasRadio = (bool)dictionary["hasRadio"];
             ShortUrl = (string)dictionary["shortUrl"];
             object albumCount;

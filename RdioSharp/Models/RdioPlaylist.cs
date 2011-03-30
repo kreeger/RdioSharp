@@ -48,8 +48,8 @@ namespace RdioSharp.Models
             BaseIcon = (string)dictionary["baseIcon"];
             RdioType = (RdioType)dictionary["rdioType"];
             Name = (string)dictionary["name"];
-            TrackCount = (int) dictionary["trackCount"];
-            OwnerName = (string)dictionary["ownerName"];
+            TrackCount = (int) dictionary["length"];
+            OwnerName = (string)dictionary["owner"];
             OwnerUrl = (string)dictionary["ownerKey"];
             OwnerKey = (string)dictionary["ownerUrl"];
             OwnerIcon = (string)dictionary["ownerIcon"];

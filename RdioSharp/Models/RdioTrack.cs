@@ -14,6 +14,9 @@ namespace RdioSharp.Models
         public string ArtistName { get; private set; }
         public string ArtistUrl { get; private set; }
         public string ArtistKey { get; private set; }
+        public string AlbumName { get; private set; }
+        public string AlbumUrl { get; private set; }
+        public string AlbumKey { get; private set; }
         public bool IsExplicit { get; private set; }
         public bool IsClean { get; private set; }
         public decimal Price { get; private set; }
@@ -30,8 +33,9 @@ namespace RdioSharp.Models
         public int PlayCount { get; private set; }
 
         private RdioTrack(string key, string url, string icon, string baseIcon, RdioType rdioType,
-            string name, string artistName, string artistUrl, string artistKey, bool isExplicit, bool isClean,
-            decimal price, bool canStream, bool canSample, bool canTether, string shortUrl, string embedUrl,
+            string name, string artistName, string artistUrl, string artistKey, string albumName,
+            string albumUrl, string albumKey, bool isExplicit, bool isClean, decimal price,
+            bool canStream, bool canSample, bool canTether, string shortUrl, string embedUrl,
             TimeSpan duration, string albumArtistName, string albumArtistKey, bool canDownload,
             bool canDownloadAlbumOnly, int playCount = -1)
         {
@@ -44,6 +48,9 @@ namespace RdioSharp.Models
             ArtistName = artistName;
             ArtistUrl = artistUrl;
             ArtistKey = artistKey;
+            AlbumName = albumName;
+            AlbumUrl = albumUrl;
+            AlbumKey = albumKey;
             IsExplicit = isExplicit;
             IsClean = isClean;
             Price = price;
@@ -68,9 +75,12 @@ namespace RdioSharp.Models
             BaseIcon = (string)dictionary["baseIcon"];
             RdioType = (RdioType)dictionary["rdioType"];
             Name = (string)dictionary["name"];
-            ArtistName = (string)dictionary["artistName"];
+            ArtistName = (string)dictionary["artist"];
             ArtistUrl = (string)dictionary["artistUrl"];
             ArtistKey = (string)dictionary["artistKey"];
+            AlbumName = (string)dictionary["album"];
+            AlbumUrl = (string)dictionary["albumUrl"];
+            AlbumKey = (string)dictionary["albumKey"];
             IsExplicit = (bool)dictionary["isExplicit"];
             IsClean = (bool)dictionary["isClean"];
             Price = (decimal)dictionary["price"];
