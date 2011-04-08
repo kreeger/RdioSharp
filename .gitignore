@@ -4,3 +4,5 @@
 RdioSharp*/bin*
 RdioSharp*/obj*
 RdioSharp.Console/Constants.cs
+RdioSharp*/*.pidb
+*.userprefs
