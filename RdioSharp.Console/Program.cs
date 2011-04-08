@@ -31,36 +31,10 @@ namespace RdioSharp.Console
                                          manager.AccessKey, manager.AccessKeySecret);
             }
 
-            System.Console.WriteLine("Getting album.");
-            var search = manager.Get(new List<string> {"a154082", "r167947", "t1851076"}, new List<string> {"trackKeys"});
-            foreach (var rdioObject in search)
+            var gets = manager.Get(new List<string> {"r86853", "r89943"});
+            foreach (RdioArtist thing in gets)
             {
-                System.Console.WriteLine(rdioObject.RdioType);
-                System.Console.WriteLine(rdioObject.Name);
-                if (rdioObject.GetType() == typeof(RdioAlbum))
-                {
-                    var album = rdioObject as RdioAlbum;
-                    if (album == null) continue;
-                    System.Console.WriteLine(album.ArtistKey);
-                    System.Console.WriteLine(string.Format("{0}:{1}", album.Duration.Minutes, album.Duration.Seconds));
-                    System.Console.WriteLine(string.Join(", ", album.TrackKeys));
-                }
-                else if (rdioObject.GetType() == typeof(RdioArtist))
-                {
-                    var artist = rdioObject as RdioArtist;
-                    if (artist == null) continue;
-                    System.Console.WriteLine(artist.Url);
-                    System.Console.WriteLine(artist.ShortUrl);
-                }
-                else if (rdioObject.GetType() == typeof(RdioTrack))
-                {
-                    var track = rdioObject as RdioTrack;
-                    if (track == null) continue;
-                    System.Console.WriteLine(track.CanStream);
-                    System.Console.WriteLine(track.CanTether);
-                    System.Console.WriteLine(track.Url);
-                    System.Console.WriteLine(track.ShortUrl);
-                }
+                System.Console.WriteLine(thing.ShortUrl);
             }
 
             System.Console.WriteLine("Press any key to continue.");
