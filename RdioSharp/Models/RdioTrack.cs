@@ -31,72 +31,7 @@ namespace RdioSharp.Models
         public bool CanDownload { get; private set; }
         public bool CanDownloadAlbumOnly { get; private set; }
         public int PlayCount { get; private set; }
-
-        private RdioTrack(string key, string url, string icon, string baseIcon, RdioType rdioType,
-            string name, string artistName, string artistUrl, string artistKey, string albumName,
-            string albumUrl, string albumKey, bool isExplicit, bool isClean, decimal price,
-            bool canStream, bool canSample, bool canTether, string shortUrl, string embedUrl,
-            TimeSpan duration, string albumArtistName, string albumArtistKey, bool canDownload,
-            bool canDownloadAlbumOnly, int playCount = -1)
-        {
-            Key = key;
-            Url = url;
-            Icon = icon;
-            BaseIcon = baseIcon;
-            RdioType = rdioType;
-            Name = name;
-            ArtistName = artistName;
-            ArtistUrl = artistUrl;
-            ArtistKey = artistKey;
-            AlbumName = albumName;
-            AlbumUrl = albumUrl;
-            AlbumKey = albumKey;
-            IsExplicit = isExplicit;
-            IsClean = isClean;
-            Price = price;
-            CanStream = canStream;
-            CanSample = canSample;
-            CanTether = canTether;
-            ShortUrl = shortUrl;
-            EmbedUrl = embedUrl;
-            Duration = duration;
-            AlbumArtistName = albumArtistName;
-            AlbumArtistKey = albumArtistKey;
-            CanDownload = canDownload;
-            CanDownloadAlbumOnly = canDownloadAlbumOnly;
-            PlayCount = playCount;
-        }
-
-        public RdioTrack(IDictionary<string, object> dictionary)
-        {
-            Key = (string)dictionary["key"];
-            Url = (string)dictionary["url"];
-            Icon = (string)dictionary["icon"];
-            BaseIcon = (string)dictionary["baseIcon"];
-            RdioType = (RdioType)dictionary["rdioType"];
-            Name = (string)dictionary["name"];
-            ArtistName = (string)dictionary["artist"];
-            ArtistUrl = (string)dictionary["artistUrl"];
-            ArtistKey = (string)dictionary["artistKey"];
-            AlbumName = (string)dictionary["album"];
-            AlbumUrl = (string)dictionary["albumUrl"];
-            AlbumKey = (string)dictionary["albumKey"];
-            IsExplicit = (bool)dictionary["isExplicit"];
-            IsClean = (bool)dictionary["isClean"];
-            Price = (decimal)dictionary["price"];
-            CanStream = (bool)dictionary["canStream"];
-            CanSample = (bool)dictionary["canSample"];
-            CanTether = (bool)dictionary["canTether"];
-            ShortUrl = (string)dictionary["shortUrl"];
-            EmbedUrl = (string)dictionary["embedUrl"];
-            Duration = (TimeSpan)dictionary["duration"];
-            AlbumArtistName = (string)dictionary["albumArtistName"];
-            AlbumArtistKey = (string)dictionary["albumArtistKey"];
-            CanDownload = (bool)dictionary["canDownload"];
-            CanDownloadAlbumOnly = (bool)dictionary["canDownloadAlbumOnly"];
-            object playCount;
-            if (dictionary.TryGetValue("trackKeys", out playCount))
-                PlayCount = (int)playCount;
-        }
+		
+		internal RdioTrack() { }
     }
 }

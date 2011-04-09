@@ -15,36 +15,6 @@ namespace RdioSharp.Models
         public string ShortUrl { get; private set; }
         public int AlbumCount { get; private set; }
 
-        private RdioArtist(string key, string name, string url, string icon, string baseIcon, RdioType rdioType,
-                           int trackCount, bool hasRadio, string shortUrl, int albumCount = -1)
-        {
-            Key = key;
-            Name = name;
-            Url = url;
-            Icon = icon;
-            BaseIcon = baseIcon;
-            RdioType = rdioType;
-            Name = name;
-            TrackCount = trackCount;
-            HasRadio = hasRadio;
-            ShortUrl = shortUrl;
-            AlbumCount = albumCount;
-        }
-
-        public RdioArtist(IDictionary<string, object> dictionary)
-        {
-            Key = (string)dictionary["key"];
-            Url = (string)dictionary["url"];
-            Icon = (string)dictionary["icon"];
-            BaseIcon = (string)dictionary["baseIcon"];
-            RdioType = (RdioType)dictionary["rdioType"];
-            Name = (string)dictionary["name"];
-            TrackCount = (int)dictionary["length"];
-            HasRadio = (bool)dictionary["hasRadio"];
-            ShortUrl = (string)dictionary["shortUrl"];
-            object albumCount;
-            if (dictionary.TryGetValue("albumCount", out albumCount))
-                AlbumCount = (int)albumCount;
-        }
+        internal RdioArtist() { }
     }
 }

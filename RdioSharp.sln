@@ -48,7 +48,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = RdioSharp\RdioSharp.csproj
+		StartupItem = RdioSharp.Console\RdioSharp.Console.csproj
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = RdioSharp.vsmdi

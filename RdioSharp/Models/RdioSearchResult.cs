@@ -4,14 +4,16 @@ namespace RdioSharp.Models
 {
     public class RdioSearchResult
     {
-        public int ResultCount { get; private set; }
-        public int AlbumCount { get; private set; }
-        public int ArtistCount { get; private set; }
-        public int PersonCount { get; private set; }
-        public int PlaylistCount { get; private set; }
-        public int TrackCount { get; private set; }
-        public IList<IRdioObject> Results { get; private set; }
-
+        public int ResultCount { get; set; }
+        public int AlbumCount { get; set; }
+        public int ArtistCount { get; set; }
+        public int PersonCount { get; set; }
+        public int PlaylistCount { get; set; }
+        public int TrackCount { get; set; }
+        public IList<IRdioObject> Results { get; set; }
+		
+		internal RdioSearchResult() { }
+		
         internal RdioSearchResult(int resultCount, int albumCount, int artistCount, int personCount,
                                   int playlistCount, int trackCount, IList<IRdioObject> results)
         {

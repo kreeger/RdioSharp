@@ -12,17 +12,7 @@ namespace RdioSharp.Models
         public IList<RdioAlbum> Albums { get; private set; }
         public IRdioObject ReviewedItem { get; private set; }
         public string Comment { get; private set; }
-
-        private RdioActivityItem(RdioUser owner, DateTime date, RdioUpdateType updateType, int updateTypeId,
-                                 IList<RdioAlbum> albums = null, IRdioObject reviewedItem = null, string comment = null)
-        {
-            Owner = owner;
-            Date = date;
-            UpdateType = updateType;
-            UpdateTypeId = updateTypeId;
-            Albums = albums;
-            ReviewedItem = reviewedItem;
-            Comment = comment;
-        }
+		
+		internal RdioActivityItem() { }
     }
 }

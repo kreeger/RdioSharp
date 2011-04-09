@@ -31,8 +31,9 @@ namespace RdioSharp.Console
                                          manager.AccessKey, manager.AccessKeySecret);
             }
 
-            System.Console.WriteLine("Getting album.");
-            var search = manager.Get(new List<string> {"a154082", "r167947", "t1851076"}, new List<string> {"trackKeys"});
+            System.Console.WriteLine("Getting user.");
+            var search = manager.Search("Brad Walters", new List<RdioType>{ RdioType.User });
+		    System.Console.WriteLine(search.FirstOrDefault())
             foreach (var rdioObject in search)
             {
                 System.Console.WriteLine(rdioObject.RdioType);

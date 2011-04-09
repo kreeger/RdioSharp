@@ -134,6 +134,18 @@ namespace RdioSharp
         #endregion
 
         #region Rdio API methods
+		
+		public bool AddFriend (string user)
+		{
+			var postData = new NameValueCollection
+								{
+									{ "method", "addFriend" },
+									{ "user", user }
+								};
+			
+			var result = MakeWebRequest (API_URL, postData);
+			return bool.Parse(result);
+		}
 
         /// <summary>
         /// Get information about the currently logged in user.
@@ -199,7 +211,8 @@ namespace RdioSharp
         /// <param name="start">The optional offset of the first result to return.</param>
         /// <param name="count">The optional maximum number of results to return.</param>
         /// <returns></returns>
-        public string Search(string query, IList<RdioType> types, bool neverOr = true, IList<string> extras = null, int start = 0, int count = 0)
+        public RdioSearchResult Search(string query, IList<RdioType> types, bool neverOr = true,
+			                           IList<string> extras = null, int start = 0, int count = 0)
         {
             var postData = new NameValueCollection
                                {
@@ -212,7 +225,7 @@ namespace RdioSharp
             if (start > 0) postData.Add("start", start.ToString());
             if (count > 0) postData.Add("count", count.ToString());
             var result = MakeWebRequest(API_URL, postData);
-            return result;
+            return ParseJSONStringToRdioSearchResult(result);
         }
 
         #endregion
@@ -345,16 +358,23 @@ namespace RdioSharp
                 default: return RdioType.Unknown;
             }
         }
+		
+		private static JObject CheckStatusAndGetResult(string input)
+		{
+			var parsed = JObject.Parse(input);
+			var status = (string)parsed["status"];
+			if (status != null)
+			{
+				if (status != "ok") return null;
+				parsed = (JObject)parsed["result"];
+			}
+			return parsed;
+		}
 
         private static IEnumerable<IRdioObject> ParseJSONListStringToRdioObjectList(string input)
         {
-            var parsed = JObject.Parse(input);
-            var status = (string)parsed["status"];
-            if (status != "ok") return null;
-
-            parsed = (JObject)parsed["result"];
-
-            var list = new List<IRdioObject>();
+			var list = new List<IRdioObject>();
+            var parsed = CheckStatusAndGetResult(input);
             foreach (var kvp in parsed)
             {
                 list.Add(ParseJSONStringToRdioObject(kvp.Value.ToString()));
@@ -362,17 +382,26 @@ namespace RdioSharp
 
             return list;
         }
+		
+		private static RdioSearchResult ParseJSONStringToRdioSearchResult(string input)
+		{
+            var parsed = CheckStatusAndGetResult(input);
+			
+			return new RdioSearchResult {
+				AlbumCount = (int)parsed["album_count"],
+				ArtistCount = (int)parsed["artist_count"],
+				ResultCount = (int)parsed["number_results"],
+				PlaylistCount = (int)parsed["playlist_count"],
+				TrackCount = (int)parsed["track_count"],
+				Results = ParseJSONListStringToRdioObjectList((string)parsed["results"]).ToList()
+			};
+			
+		}
 
         private static IRdioObject ParseJSONStringToRdioObject(string input)
         {
             IRdioObject rdioObject = null;
-            var parsed = JObject.Parse(input);
-            var status = (string)parsed["status"];
-            if (status != null)
-            {
-                if (status != "ok") return null;
-                parsed = (JObject)parsed["result"];
-            }
+            var parsed = CheckStatusAndGetResult(input);
 
             var rdioType = ParseRdioType((string)parsed["type"]);
             var result = new Dictionary<string, object>
@@ -388,23 +417,25 @@ namespace RdioSharp
             {
                 case RdioType.Album:
                     JToken trackKeys;
-                    result.Add("name", (string)parsed["name"]);
-                    result.Add("artist", (string)parsed["artist"]);
-                    result.Add("artistUrl", (string)parsed["artistUrl"]);
-                    result.Add("artistKey", (string)parsed["artistKey"]);
-                    result.Add("isExplicit", (bool)parsed["isExplicit"]);
-                    result.Add("isClean", (bool)parsed["isClean"]);
-                    result.Add("price", Decimal.Parse((string)parsed["price"]));
-                    result.Add("canStream", (bool)parsed["canStream"]);
-                    result.Add("canSample", (bool)parsed["canSample"]);
-                    result.Add("canTether", (bool)parsed["canTether"]);
-                    result.Add("shortUrl", (string)parsed["shortUrl"]);
-                    result.Add("embedUrl", (string)parsed["embedUrl"]);
-                    result.Add("duration", new TimeSpan(0, 0, (int) parsed["duration"]));
-                    result.Add("releaseDate", DateTime.Parse((string)parsed["releaseDate"]));
+				    rdioObject = new RdioAlbum
+					{
+						Name = (string)parsed["name"],
+						ArtistName = (string)parsed["artist"],
+						ArtistUrl = (string)parsed["artistUrl"],
+						ArtistKey = (string)parsed["artistKey"],
+						IsExplicit = (bool)parsed["isExplicit"],
+						IsClean = (bool)parsed["isClean"],
+						Price = Decimal.Parse((string)parsed["price"]),
+						CanStream = (bool)parsed["canStream"],
+						CanSample = (bool)parsed["canSample"],
+						CanTether = (bool)parsed["canTether"],
+						ShortUrl = (string)parsed["shortUrl"],
+						EmbedUrl = (string)parsed["embedUrl"],
+						Duration = new TimeSpan(0, 0, (int)parsed["duration"]),
+						ReleaseDate = DateTime.Parse((string)parsed["name"])
+					};
                     if (parsed.TryGetValue("trackKeys", out trackKeys))
-                        result.Add("trackKeys", trackKeys.Select(item => (string)item).ToList());
-                    rdioObject = new RdioAlbum(result);
+                        rdioObject.TrackKeys = trackKeys.Select(item => (string)item).ToList();
                     break;
                 case RdioType.Artist:
                     JToken albumCount;
