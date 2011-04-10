@@ -80,35 +80,37 @@ namespace RdioSharp
             {
                 case RdioType.Album:
                     JToken trackKeys;
-				    rdioObject = new RdioAlbum
-					{
-						Name = (string)parsed["name"],
-						ArtistName = (string)parsed["artist"],
-						ArtistUrl = (string)parsed["artistUrl"],
-						ArtistKey = (string)parsed["artistKey"],
-						IsExplicit = (bool)parsed["isExplicit"],
-						IsClean = (bool)parsed["isClean"],
-						Price = Decimal.Parse((string)parsed["price"]),
-						CanStream = (bool)parsed["canStream"],
-						CanSample = (bool)parsed["canSample"],
-						CanTether = (bool)parsed["canTether"],
-						ShortUrl = (string)parsed["shortUrl"],
-						EmbedUrl = (string)parsed["embedUrl"],
-						Duration = new TimeSpan(0, 0, (int)parsed["duration"]),
-						ReleaseDate = DateTime.Parse((string)parsed["name"])
-					};
+                    rdioObject = new RdioAlbum
+                                     {
+                                         Name = (string) parsed["name"],
+                                         ArtistName = (string) parsed["artist"],
+                                         ArtistUrl = (string) parsed["artistUrl"],
+                                         ArtistKey = (string) parsed["artistKey"],
+                                         IsExplicit = (bool) parsed["isExplicit"],
+                                         IsClean = (bool) parsed["isClean"],
+                                         Price = Decimal.Parse((string) parsed["price"]),
+                                         CanStream = (bool) parsed["canStream"],
+                                         CanSample = (bool) parsed["canSample"],
+                                         CanTether = (bool) parsed["canTether"],
+                                         ShortUrl = (string) parsed["shortUrl"],
+                                         EmbedUrl = (string) parsed["embedUrl"],
+                                         Duration = new TimeSpan(0, 0, (int) parsed["duration"]),
+                                         ReleaseDate = DateTime.Parse((string) parsed["name"])
+                                     };
                     if (parsed.TryGetValue("trackKeys", out trackKeys))
-                        rdioObject.TrackKeys = trackKeys.Select(item => (string)item).ToList();
+                        ((RdioAlbum)rdioObject).TrackKeys = trackKeys.Select(item => (string)item).ToList();
                     break;
                 case RdioType.Artist:
                     JToken albumCount;
-                    result.Add("name", (string)parsed["name"]);
-                    result.Add("length", (int)parsed["length"]);
-                    result.Add("hasRadio", (bool)parsed["hasRadio"]);
-                    result.Add("shortUrl", (string)parsed["shortUrl"]);
+                    rdioObject = new RdioArtist
+                                     {
+                                         Name = (string) parsed["name"],
+                                         TrackCount = (int) parsed["length"],
+                                         HasRadio = (bool) parsed["hasRadio"],
+                                         ShortUrl = (string) parsed["shortUrl"]
+                                     };
                     if (parsed.TryGetValue("albumCount", out albumCount))
-                        result.Add("albumCount", (int)albumCount);
-                    rdioObject = new RdioArtist(result);
+                        ((RdioArtist)rdioObject).AlbumCount = (int) albumCount;
                     break;
                 case RdioType.Playlist:
                     result.Add("name", (string)parsed["name"]);

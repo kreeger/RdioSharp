@@ -1,19 +1,17 @@
-﻿using System.Collections.Generic;
-
-namespace RdioSharp.Models
+﻿namespace RdioSharp.Models
 {
     public class RdioArtist : IRdioObject
     {
-        public string Key { get; private set; }
-        public string Name { get; private set; }
-        public string Url { get; private set; }
-        public string Icon { get; private set; }
-        public string BaseIcon { get; private set; }
-        public RdioType RdioType { get; private set; }
-        public int TrackCount { get; private set; }
-        public bool HasRadio { get; private set; }
-        public string ShortUrl { get; private set; }
-        public int AlbumCount { get; private set; }
+        public string Key { get; set; }
+        public string Name { get; set; }
+        public string Url { get; set; }
+        public string Icon { get; set; }
+        public string BaseIcon { get; set; }
+        public RdioType RdioType { get; set; }
+        public int TrackCount { get; set; }
+        public bool HasRadio { get; set; }
+        public string ShortUrl { get; set; }
+        public int AlbumCount { get; set; }
 
         internal RdioArtist() { }
     }
