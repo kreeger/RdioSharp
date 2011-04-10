@@ -136,7 +136,7 @@ namespace RdioSharp
 								};
 			
 			var result = MakeWebRequest (API_URL, postData);
-			return bool.Parse(result);
+		    return RdioFunctions.ParseJSONToBooleanResult(result);
 		}
 
         /// <summary>

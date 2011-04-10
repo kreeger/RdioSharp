@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace RdioSharp.Models
 {
     public class RdioUser : IRdioObject
     {
-        public string Key { get; private set; }
-        public string Name { get { return FirstName + " " + LastName; } }
-        public string Url { get; private set; }
-        public string Icon { get; private set; }
-        public string BaseIcon { get; private set; }
-        public RdioType RdioType { get; private set; }
+        public string Key { get; set; }
+        public string Name { get; set; }
+        public string Url { get; set; }
+        public string Icon { get; set; }
+        public string BaseIcon { get; set; }
+        public RdioType RdioType { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public long LibraryVersion { get; set; }

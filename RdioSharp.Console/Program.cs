@@ -33,37 +33,11 @@ namespace RdioSharp.Console
 
             System.Console.WriteLine("Getting user.");
             var search = manager.Search("Brad Walters", new List<RdioType>{ RdioType.User });
-		    System.Console.WriteLine(search.FirstOrDefault())
-            foreach (var rdioObject in search)
-            {
-                System.Console.WriteLine(rdioObject.RdioType);
-                System.Console.WriteLine(rdioObject.Name);
-                if (rdioObject.GetType() == typeof(RdioAlbum))
-                {
-                    var album = rdioObject as RdioAlbum;
-                    if (album == null) continue;
-                    System.Console.WriteLine(album.ArtistKey);
-                    System.Console.WriteLine(string.Format("{0}:{1}", album.Duration.Minutes, album.Duration.Seconds));
-                    System.Console.WriteLine(string.Join(", ", album.TrackKeys));
-                }
-                else if (rdioObject.GetType() == typeof(RdioArtist))
-                {
-                    var artist = rdioObject as RdioArtist;
-                    if (artist == null) continue;
-                    System.Console.WriteLine(artist.Url);
-                    System.Console.WriteLine(artist.ShortUrl);
-                }
-                else if (rdioObject.GetType() == typeof(RdioTrack))
-                {
-                    var track = rdioObject as RdioTrack;
-                    if (track == null) continue;
-                    System.Console.WriteLine(track.CanStream);
-                    System.Console.WriteLine(track.CanTether);
-                    System.Console.WriteLine(track.Url);
-                    System.Console.WriteLine(track.ShortUrl);
-                }
-            }
+            var result = search.Users.FirstOrDefault();
+            System.Console.WriteLine(result.Name + " " + result.Key);
 
+            var addFriend = manager.AddFriend(result.Key);
+            System.Console.WriteLine(addFriend ? "Added friend " + result.Name : "Couldn't add friend " + result.Name);
             System.Console.WriteLine("Press any key to continue.");
             System.Console.ReadKey();
         }
