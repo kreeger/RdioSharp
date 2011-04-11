@@ -6,16 +6,11 @@ using System.Linq;
 using System.Net;
 using System.Web;
 
-using Newtonsoft.Json.Linq;
-
+using RdioSharp.Enum;
 using RdioSharp.Models;
 
 namespace RdioSharp
 {
-    public interface IRdioManager
-    {
-    }
-    
     public class RdioManager : IRdioManager
     {
 
@@ -85,7 +80,7 @@ namespace RdioSharp
         {
             var data = new NameValueCollection { { "oauth_callback", CallBackUrl } };
 
-            var response = MakeWebRequest(REQUEST_TOKEN_URL, data);
+            var response = MakeWebRequest(data, REQUEST_TOKEN_URL);
             if (response.Length <= 0) return;
 
             //response contains token and token secret.  We only need the token.
@@ -112,7 +107,7 @@ namespace RdioSharp
 
             // Make a web request to get the access token; this will already sign it with our verifier
             // which is now no longer null.
-            var response = MakeWebRequest(ACCESS_TOKEN_URL);
+            var response = MakeWebRequest(url: ACCESS_TOKEN_URL);
 
             if (response.Length <= 0) return;
 
@@ -127,41 +122,96 @@ namespace RdioSharp
 
         #region Rdio API methods
 		
-		public bool AddFriend (string user)
+        /// <summary>
+        /// <see cref="IRdioManager.AddFriend"/>
+        /// </summary>
+		public bool AddFriend(string user)
 		{
-			var postData = new NameValueCollection
-								{
-									{ "method", "addFriend" },
-									{ "user", user }
-								};
+		    var postData = new NameValueCollection
+		                       {
+		                           {"method", "addFriend"},
+		                           {"user", user}
+		                       };
 			
-			var result = MakeWebRequest (API_URL, postData);
+			var result = MakeWebRequest(postData);
 		    return RdioFunctions.ParseJSONToBooleanResult(result);
 		}
 
         /// <summary>
-        /// Get information about the currently logged in user.
+        /// <see cref="IRdioManager.AddToCollection"/>
         /// </summary>
-        /// <param name="extras">An optional list of extra fields to send in.</param>
-        /// <returns></returns>
-        public RdioUser CurrentUser(IList<string> extras = null)
+        public bool AddToCollection(IEnumerable<string> keys)
+        {
+            var postData = new NameValueCollection
+								{
+									{ "method", "addToCollection" },
+									{ "keys", string.Join(",", keys) }
+								};
+
+            var result = MakeWebRequest(postData);
+            return RdioFunctions.ParseJSONToBooleanResult(result);
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.AddToPlaylist"/>
+        /// </summary>
+        public bool AddToPlaylist(string playlist, IEnumerable<string> tracks)
+        {
+            var postData = new NameValueCollection
+								{
+									{ "method", "addToPlaylist" },
+									{ "playlist", playlist },
+                                    { "tracks", string.Join(",", tracks) }
+								};
+
+            var result = MakeWebRequest(postData);
+            return RdioFunctions.ParseJSONToBooleanResult(result);
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.CreatePlaylist"/>
+        /// </summary>
+        public RdioPlaylist CreatePlaylist(string name, string description, IEnumerable<string> tracks,
+                                           IEnumerable<string> extras = null)
+        {
+            var postData = new NameValueCollection
+								{
+									{ "method", "createPlaylist" },
+									{ "name", name },
+                                    { "description", description },
+                                    { "tracks", string.Join(",", tracks) }
+								};
+
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
+            var result = MakeWebRequest(postData);
+            return RdioFunctions.ParseJSONStringToRdioObject(result) as RdioPlaylist;
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.CurrentUser"/>
+        /// </summary>
+        public RdioUser CurrentUser(IEnumerable<string> extras = null)
         {
             var postData = new NameValueCollection { { "method", "currentUser" } };
 
-            if (extras != null && extras.Count > 0) postData.Add("extras", string.Join(",", extras));
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             // This will be in... JSON?
-            var result = MakeWebRequest(API_URL, postData);
+            var result = MakeWebRequest(postData);
             return RdioFunctions.ParseJSONStringToRdioObject(result) as RdioUser;
         }
 
         /// <summary>
-        /// Find a user either by email address or by their username.
-        /// Exactly one of email or vanityName must be supplied.
+        /// <see cref="IRdioManager.GetActivityStream"/>
         /// </summary>
-        /// <param name="email">An email address.</param>
-        /// <param name="vanityName">A username.</param>
-        /// <returns></returns>
+        public bool DeletePlaylist(string playlist)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.FindUser"/>
+        /// </summary>
         public RdioUser FindUser(string email = null, string vanityName = null)
         {
             var postData = new NameValueCollection {{"method", "findUser"}};
@@ -169,40 +219,182 @@ namespace RdioSharp
             else if (vanityName != null) postData.Add("vanityName", vanityName);
 
             // This will be in... JSON?
-            var result = MakeWebRequest(API_URL, postData);
+            var result = MakeWebRequest(postData);
             return RdioFunctions.ParseJSONStringToRdioObject(result) as RdioUser;
         }
 
         /// <summary>
-        /// Fetch one or more objects from Rdio.
+        /// <see cref="IRdioManager.Get"/>
         /// </summary>
-        /// <param name="keys">A list of keys for the objects to fetch.</param>
-        /// <param name="extras">An optional list of extra fields to send in.</param>
-        /// <returns></returns>
-        public IEnumerable<IRdioObject> Get(IEnumerable<string> keys, IList<string> extras = null)
+        public IEnumerable<IRdioObject> Get(IEnumerable<string> keys, IEnumerable<string> extras = null)
         {
             var postData = new NameValueCollection
                                {
                                    {"method", "get"},
                                    {"keys", string.Join(",", keys)}
                                };
-            if (extras != null && extras.Count > 0) postData.Add("extras", string.Join(",", extras));
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             // This will be in... JSON?
-            var result = MakeWebRequest(API_URL, postData);
+            var result = MakeWebRequest(postData);
             return RdioFunctions.ParseJSONListStringToRdioObjectList(result);
         }
 
         /// <summary>
-        /// Search for artists, albums, tracks, users or all kinds of objects.
+        /// <see cref="IRdioManager.GetActivityStream"/>
         /// </summary>
-        /// <param name="query">The search query.</param>
-        /// <param name="types">Types to include in results.</param>
-        /// <param name="neverOr">Optional; false disables an "OR" search fallback; true allows both "AND" and "OR" searches.</param>
-        /// <param name="extras">An optional list of extra fields to send in.</param>
-        /// <param name="start">The optional offset of the first result to return.</param>
-        /// <param name="count">The optional maximum number of results to return.</param>
-        /// <returns></returns>
+        public RdioActivityStream GetActivityStream(string user, RdioScope scope, long lastId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetAlbumsForArtist"/>
+        /// </summary>
+        public IEnumerable<RdioAlbum> GetAlbumsForArtist(string artist, bool featuring, IEnumerable<string> extras, int start, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetAlbumsForArtistInCollection"/>
+        /// </summary>
+        public IEnumerable<RdioAlbum> GetAlbumsForArtistInCollection(string artist, string user)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetAlbumsInCollection"/>
+        /// </summary>
+        public IEnumerable<RdioAlbum> GetAlbumsInCollection(string user, int start, int count, RdioSortBy sort, string query)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetHeavyRotation"/>
+        /// </summary>
+        public IEnumerable<RdioArtist> GetArtistsInCollection(string user, int start, int count, RdioSortBy sort, string query)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetHeavyRotation"/>
+        /// </summary>
+        public IEnumerable<IRdioObject> GetHeavyRotation(string user, RdioHeavyRotationType type, bool friends, int limit)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetNewReleases"/>
+        /// </summary>
+        public IEnumerable<RdioAlbum> GetNewReleases(RdioTimeframe timeframe, int start, int count, IEnumerable<string> extras)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetObjectFromShortCode"/>
+        /// </summary>
+        public IRdioObject GetObjectFromShortCode(string shortCode)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetObjectFromUrl"/>
+        /// </summary>
+        public IRdioObject GetObjectFromUrl(string url)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetPlaybackToken"/>
+        /// </summary>
+        public string GetPlaybackToken(string domain)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetPlaylists"/>
+        /// </summary>
+        public RdioPlaylistSet GetPlaylists(IEnumerable<string> extras)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetTopCharts"/>
+        /// </summary>
+        public IEnumerable<IRdioObject> GetTopCharts(RdioType type, int start, int count, IEnumerable<string> extras)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetTracksForAlbumInCollection"/>
+        /// </summary>
+        public IEnumerable<RdioTrack> GetTracksForAlbumInCollection(string album, string user, IEnumerable<string> extras)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetTracksForArtist"/>
+        /// </summary>
+        public IEnumerable<RdioTrack> GetTracksForArtist(string artist, bool appearsOn, IEnumerable<string> extras, int start, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetTracksForArtistInCollection"/>
+        /// </summary>
+        public IEnumerable<RdioTrack> GetTracksForArtistInCollection(string artist, string user, IEnumerable<string> extras)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.GetTracksInCollection"/>
+        /// </summary>
+        public IEnumerable<RdioTrack> GetTracksInCollection(string user, int start, int count, RdioSortBy sort, string query)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.RemoveFriend"/>
+        /// </summary>
+        public bool RemoveFriend(string user)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.RemoveFromCollection"/>
+        /// </summary>
+        public bool RemoveFromCollection(IEnumerable<string> keys)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.RemoveFromPlaylist"/>
+        /// </summary>
+        public bool RemoveFromPlaylist(string playlist, IEnumerable<string> tracks, int index, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.Search"/>
+        /// </summary>
         public RdioSearchResult Search(string query, IList<RdioType> types, bool neverOr = true,
 			                           IList<string> extras = null, int start = 0, int count = 0)
         {
@@ -216,8 +408,16 @@ namespace RdioSharp
             if (extras != null && extras.Count > 0) postData.Add("extras", string.Join(",", extras));
             if (start > 0) postData.Add("start", start.ToString());
             if (count > 0) postData.Add("count", count.ToString());
-            var result = MakeWebRequest(API_URL, postData);
+            var result = MakeWebRequest(postData);
             return RdioFunctions.ParseJSONStringToRdioSearchResult(result);
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.SearchSuggestions"/>
+        /// </summary>
+        public IEnumerable<IRdioObject> SearchSuggestions(string query, IEnumerable<string> extras)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -230,7 +430,7 @@ namespace RdioSharp
         /// <param name="url">The full url, including the querystring.</param>
         /// <param name="postData">Data to post, as a <see cref="NameValueCollection"/>.</param>
         /// <returns>The web server response.</returns>
-        private string MakeWebRequest(string url, NameValueCollection postData = null)
+        private string MakeWebRequest(NameValueCollection postData = null, string url = API_URL)
         {
             string outUrl;
             string querystring;

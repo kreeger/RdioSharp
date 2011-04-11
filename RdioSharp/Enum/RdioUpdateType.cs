@@ -1,4 +1,4 @@
-﻿namespace RdioSharp.Models
+﻿namespace RdioSharp.Enum
 {
     public enum RdioUpdateType
     {

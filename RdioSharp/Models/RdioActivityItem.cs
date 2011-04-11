@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using RdioSharp.Enum;
+
 namespace RdioSharp.Models
 {
     public class RdioActivityItem

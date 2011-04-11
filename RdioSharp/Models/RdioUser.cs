@@ -1,5 +1,7 @@
 ﻿using System;
 
+using RdioSharp.Enum;
+
 namespace RdioSharp.Models
 {
     public class RdioUser : IRdioObject

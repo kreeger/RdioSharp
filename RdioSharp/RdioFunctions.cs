@@ -4,6 +4,7 @@ using System.Linq;
 
 using Newtonsoft.Json.Linq;
 
+using RdioSharp.Enum;
 using RdioSharp.Models;
 
 namespace RdioSharp
@@ -49,6 +50,12 @@ namespace RdioSharp
                 result = (bool)parsed["result"];
 
             return result;
+        }
+
+        private static DateTime ParseStringToDateTime(string input)
+        {
+            var dateList = input.Split('-');
+            return new DateTime(int.Parse(dateList[0]), int.Parse(dateList[1]), int.Parse(dateList[2]));
         }
 
         #endregion
@@ -135,14 +142,15 @@ namespace RdioSharp
                                          ArtistKey = (string) parsed["artistKey"],
                                          IsExplicit = (bool) parsed["isExplicit"],
                                          IsClean = (bool) parsed["isClean"],
-                                         Price = Decimal.Parse((string) parsed["price"]),
+                                         Price = (string) parsed["price"] == "None" ? 0 :
+                                            Decimal.Parse((string) parsed["price"]),
                                          CanStream = (bool) parsed["canStream"],
                                          CanSample = (bool) parsed["canSample"],
                                          CanTether = (bool) parsed["canTether"],
                                          ShortUrl = (string) parsed["shortUrl"],
                                          EmbedUrl = (string) parsed["embedUrl"],
                                          Duration = new TimeSpan(0, 0, (int) parsed["duration"]),
-                                         ReleaseDate = DateTime.Parse((string) parsed["name"])
+                                         ReleaseDate = ParseStringToDateTime((string) parsed["releaseDate"])
                                      };
                     if (parsed.TryGetValue("trackKeys", out trackKeys))
                         ((RdioAlbum)rdioObject).TrackKeys = trackKeys.Select(item => (string)item).ToList();

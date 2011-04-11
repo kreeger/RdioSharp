@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using RdioSharp.Enum;
 using RdioSharp.Models;
 
 namespace RdioSharp.Console
@@ -31,13 +31,11 @@ namespace RdioSharp.Console
                                          manager.AccessKey, manager.AccessKeySecret);
             }
 
-            System.Console.WriteLine("Getting user.");
-            var search = manager.Search("Brad Walters", new List<RdioType>{ RdioType.User });
-            var result = search.Users.FirstOrDefault();
-            System.Console.WriteLine(result.Name + " " + result.Key);
-
-            var addFriend = manager.AddFriend(result.Key);
-            System.Console.WriteLine(addFriend ? "Added friend " + result.Name : "Couldn't add friend " + result.Name);
+            System.Console.WriteLine("Searching.");
+            var result = manager.Search(query: "Rhianna", types: new List<RdioType> {RdioType.Album}, extras: new List<string>{"trackKeys"});
+            System.Console.WriteLine(result.Albums[1].Name);
+            System.Console.WriteLine(result.Albums[1].TrackKeys);
+            var added = manager.AddToCollection(result.Albums[1].TrackKeys);
             System.Console.WriteLine("Press any key to continue.");
             System.Console.ReadKey();
         }

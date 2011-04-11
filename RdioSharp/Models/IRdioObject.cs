@@ -1,4 +1,6 @@
-﻿namespace RdioSharp.Models
+﻿using RdioSharp.Enum;
+
+namespace RdioSharp.Models
 {
     public interface IRdioObject
     {

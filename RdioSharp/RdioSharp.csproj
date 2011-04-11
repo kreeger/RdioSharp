@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -44,6 +44,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enum\RdioHeavyRotationType.cs" />
+    <Compile Include="Enum\RdioTimeframe.cs" />
+    <Compile Include="IRdioManager.cs" />
     <Compile Include="Models\IRdioObject.cs" />
     <Compile Include="Models\RdioActivityItem.cs" />
     <Compile Include="Models\RdioActivityStream.cs" />
@@ -51,10 +54,13 @@
     <Compile Include="Models\RdioArtist.cs" />
     <Compile Include="Models\IRdioMusicObject.cs" />
     <Compile Include="Models\RdioPlaylist.cs" />
+    <Compile Include="Models\RdioPlaylistSet.cs" />
+    <Compile Include="Enum\RdioScope.cs" />
     <Compile Include="Models\RdioSearchResult.cs" />
+    <Compile Include="Enum\RdioSortBy.cs" />
     <Compile Include="Models\RdioTrack.cs" />
-    <Compile Include="Models\RdioType.cs" />
-    <Compile Include="Models\RdioUpdateType.cs" />
+    <Compile Include="Enum\RdioType.cs" />
+    <Compile Include="Enum\RdioUpdateType.cs" />
     <Compile Include="Models\RdioUser.cs" />
     <Compile Include="OAuth.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
