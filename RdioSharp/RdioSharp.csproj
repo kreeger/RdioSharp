@@ -44,7 +44,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enum\RdioHeavyRotationType.cs" />
     <Compile Include="Enum\RdioTimeframe.cs" />
     <Compile Include="IRdioManager.cs" />
     <Compile Include="Models\IRdioObject.cs" />
