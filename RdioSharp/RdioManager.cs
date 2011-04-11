@@ -172,7 +172,7 @@ namespace RdioSharp
         /// <see cref="IRdioManager.CreatePlaylist"/>
         /// </summary>
         public RdioPlaylist CreatePlaylist(string name, string description, IEnumerable<string> tracks,
-                                           IEnumerable<string> extras = null)
+                                           IEnumerable<string> extras)
         {
             var postData = new NameValueCollection
 								{
@@ -190,7 +190,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.CurrentUser"/>
         /// </summary>
-        public RdioUser CurrentUser(IEnumerable<string> extras = null)
+        public RdioUser CurrentUser(IEnumerable<string> extras)
         {
             var postData = new NameValueCollection { { "method", "currentUser" } };
 
@@ -212,7 +212,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.FindUser"/>
         /// </summary>
-        public RdioUser FindUser(string email = null, string vanityName = null)
+        public RdioUser FindUser(string email, string vanityName)
         {
             var postData = new NameValueCollection {{"method", "findUser"}};
             if (email != null) postData.Add("email", email);
@@ -226,7 +226,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.Get"/>
         /// </summary>
-        public IEnumerable<IRdioObject> Get(IEnumerable<string> keys, IEnumerable<string> extras = null)
+        public IEnumerable<IRdioObject> Get(IEnumerable<string> keys, IEnumerable<string> extras)
         {
             var postData = new NameValueCollection
                                {
@@ -283,7 +283,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetHeavyRotation"/>
         /// </summary>
-        public IEnumerable<IRdioObject> GetHeavyRotation(string user, RdioHeavyRotationType type, bool friends, int limit)
+        public IEnumerable<IRdioObject> GetHeavyRotation(string user, RdioType type, bool friends, int limit)
         {
             throw new NotImplementedException();
         }
@@ -395,8 +395,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.Search"/>
         /// </summary>
-        public RdioSearchResult Search(string query, IList<RdioType> types, bool neverOr = true,
-			                           IList<string> extras = null, int start = 0, int count = 0)
+        public RdioSearchResult Search(string query, IList<RdioType> types, bool neverOr,
+			                           IList<string> extras, int start, int count)
         {
             var postData = new NameValueCollection
                                {
