@@ -216,55 +216,57 @@ namespace RdioSharp
         /// <param name="extras">Optional. A list of additional fields to return.</param>
         /// <param name="start">Optional. The offset of the first result to return.</param>
         /// <param name="count">Optional. The maxiumum number of results to return.</param>
-        /// <returns></returns>
+        /// <returns>A list of <see cref="RdioTrack"/>s.</returns>
         IEnumerable<RdioTrack> GetTracksForArtist(string artist, bool appearsOn = false,
                                                   IEnumerable<string> extras = null, int start = 0, int count = 0);
 
         /// <summary>
         /// Which tracks from the given artist are in the user's collection. Does not require authentication.
         /// </summary>
-        /// <param name="artist"></param>
-        /// <param name="user"></param>
+        /// <param name="artist">Required. The key of the artist.</param>
+        /// <param name="user">Optional. The key of the user whose collection to examine.</param>
         /// <param name="extras">Optional. A list of additional fields to return.</param>
-        /// <returns></returns>
+        /// <returns>A list of <see cref="RdioTrack"/>s.</returns>
         IEnumerable<RdioTrack> GetTracksForArtistInCollection(string artist, string user = null,
                                                               IEnumerable<string> extras = null);
 
         /// <summary>
         /// Get all of the tracks in the user's collection. Does not require authentication.
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="user">Optional. The key of the collection user.</param>
         /// <param name="start">Optional. The offset of the first result to return.</param>
         /// <param name="count">Optional. The maxiumum number of results to return.</param>
-        /// <param name="sort"></param>
+        /// <param name="sort">Optional. Sory by; valid values are DateAdded, PlayCount, Artist,
+        /// Album, and Name.</param>
         /// <param name="query">Optional. The search prefix.</param>
-        /// <returns></returns>
+        /// <returns>A list of <see cref="RdioTrack"/>s.</returns>
         IEnumerable<RdioTrack> GetTracksInCollection(string user = null, int start = 0, int count = 0,
                                                      RdioSortBy sort = RdioSortBy.None, string query = null);
 
         /// <summary>
         /// Remove a friend from the current user. Requires authentication.
         /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
+        /// <param name="user">Required. The user to remove.</param>
+        /// <returns>True if success, false if failure.</returns>
         bool RemoveFriend(string user);
 
         /// <summary>
         /// Remove tracks or playlists from the current user's collection. Requires authentication.
         /// </summary>
-        /// <param name="keys"></param>
-        /// <returns></returns>
+        /// <param name="keys">Required. The list of track or playlist keys to remove from the collection.</param>
+        /// <returns>True if success, false if failure.</returns>
         bool RemoveFromCollection(IEnumerable<string> keys);
 
         /// <summary>
         /// Remove an item from a playlist by its position in the playlist. Requires authentication.
         /// </summary>
-        /// <param name="playlist"></param>
-        /// <param name="tracks"></param>
-        /// <param name="index"></param>
+        /// <param name="playlist">Required. The playlist to modify.</param>
+        /// <param name="tracks">Required. The keys of the tracks to remove.</param>
+        /// <param name="index">Optional. The index of the first item to remove. If not supplied, the
+        /// default is 0.</param>
         /// <param name="count">Optional. The maxiumum number of results to return. If not supplied, the count
         /// of tracks is used.</param>
-        /// <returns></returns>
+        /// <returns>True if success, false if failure.</returns>
         bool RemoveFromPlaylist(string playlist, IEnumerable<string> tracks, int index = 0, int count = 0);
 
         /// <summary>
