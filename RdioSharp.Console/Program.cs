@@ -32,10 +32,7 @@ namespace RdioSharp.Console
             }
 
             System.Console.WriteLine("Searching.");
-            var result = manager.Search(query: "Rhianna", types: new List<RdioType> {RdioType.Album}, extras: new List<string>{"trackKeys"});
-            System.Console.WriteLine(result.Albums[1].Name);
-            System.Console.WriteLine(result.Albums[1].TrackKeys);
-            var added = manager.AddToCollection(result.Albums[1].TrackKeys);
+            var activity = manager.GetActivityStream(manager.CurrentUser().Key);
             System.Console.WriteLine("Press any key to continue.");
             System.Console.ReadKey();
         }

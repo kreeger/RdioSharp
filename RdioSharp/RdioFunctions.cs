@@ -115,6 +115,13 @@ namespace RdioSharp
 
 		}
 
+        public static RdioActivityStream ParseJSONStringToRdioActivityStream(string input)
+        {
+            var parsed = CheckStatusAndGetResult(input);
+
+            return null;
+        }
+
         public static IRdioObject ParseJSONStringToRdioObject(string input)
         {
             IRdioObject rdioObject = null;

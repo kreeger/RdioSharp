@@ -143,10 +143,10 @@ namespace RdioSharp
         public bool AddToCollection(IEnumerable<string> keys)
         {
             var postData = new NameValueCollection
-								{
-									{ "method", "addToCollection" },
-									{ "keys", string.Join(",", keys) }
-								};
+                               {
+                                   {"method", "addToCollection"},
+                                   {"keys", string.Join(",", keys)}
+                               };
 
             var result = MakeWebRequest(postData);
             return RdioFunctions.ParseJSONToBooleanResult(result);
@@ -158,12 +158,12 @@ namespace RdioSharp
         public bool AddToPlaylist(string playlist, IEnumerable<string> tracks)
         {
             var postData = new NameValueCollection
-								{
-									{ "method", "addToPlaylist" },
-									{ "playlist", playlist },
-                                    { "tracks", string.Join(",", tracks) }
-								};
-
+                               {
+                                   {"method", "addToPlaylist"},
+                                   {"playlist", playlist},
+                                   {"tracks", string.Join(",", tracks)}
+                               };
+            
             var result = MakeWebRequest(postData);
             return RdioFunctions.ParseJSONToBooleanResult(result);
         }
@@ -175,14 +175,14 @@ namespace RdioSharp
                                            IEnumerable<string> extras)
         {
             var postData = new NameValueCollection
-								{
-									{ "method", "createPlaylist" },
-									{ "name", name },
-                                    { "description", description },
-                                    { "tracks", string.Join(",", tracks) }
-								};
-
+                               {
+                                   {"method", "createPlaylist"},
+                                   {"name", name},
+                                   {"description", description},
+                                   {"tracks", string.Join(",", tracks)}
+                               };
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
+            
             var result = MakeWebRequest(postData);
             return RdioFunctions.ParseJSONStringToRdioObject(result) as RdioPlaylist;
         }
@@ -192,11 +192,9 @@ namespace RdioSharp
         /// </summary>
         public RdioUser CurrentUser(IEnumerable<string> extras)
         {
-            var postData = new NameValueCollection { { "method", "currentUser" } };
-
+            var postData = new NameValueCollection {{"method", "currentUser"}};
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
-            // This will be in... JSON?
             var result = MakeWebRequest(postData);
             return RdioFunctions.ParseJSONStringToRdioObject(result) as RdioUser;
         }
@@ -206,7 +204,14 @@ namespace RdioSharp
         /// </summary>
         public bool DeletePlaylist(string playlist)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "deletePlaylist"},
+                                   {"playlist", playlist}
+                               };
+            
+            var result = MakeWebRequest(postData);
+            return RdioFunctions.ParseJSONToBooleanResult(result);
         }
 
         /// <summary>
@@ -218,7 +223,6 @@ namespace RdioSharp
             if (email != null) postData.Add("email", email);
             else if (vanityName != null) postData.Add("vanityName", vanityName);
 
-            // This will be in... JSON?
             var result = MakeWebRequest(postData);
             return RdioFunctions.ParseJSONStringToRdioObject(result) as RdioUser;
         }
@@ -235,7 +239,6 @@ namespace RdioSharp
                                };
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
-            // This will be in... JSON?
             var result = MakeWebRequest(postData);
             return RdioFunctions.ParseJSONListStringToRdioObjectList(result);
         }
@@ -245,7 +248,16 @@ namespace RdioSharp
         /// </summary>
         public RdioActivityStream GetActivityStream(string user, RdioScope scope, long lastId)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getActivityStream"},
+                                   {"user", user},
+                                   {"scope", scope.ToString()}
+                               };
+            if (lastId > 0) postData.Add("last_id", lastId.ToString());
+
+            var result = MakeWebRequest(postData);
+            return RdioFunctions.ParseJSONStringToRdioActivityStream(result);
         }
 
         /// <summary>
@@ -408,6 +420,7 @@ namespace RdioSharp
             if (extras != null && extras.Count > 0) postData.Add("extras", string.Join(",", extras));
             if (start > 0) postData.Add("start", start.ToString());
             if (count > 0) postData.Add("count", count.ToString());
+
             var result = MakeWebRequest(postData);
             return RdioFunctions.ParseJSONStringToRdioSearchResult(result);
         }
