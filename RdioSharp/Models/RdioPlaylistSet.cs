@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace RdioSharp.Models
 {
-    public class RdioPlaylistSet
+    [DataContract]
+    public class RdioPlaylistSet : IRdioBaseObject
     {
-        public IList<RdioPlaylist> OwnedPlaylists { get; set; }
-        public IList<RdioPlaylist> CollaboratedPlaylists { get; set; }
-        public IList<RdioPlaylist> SubscribedPlaylists { get; set; }
-
-        internal RdioPlaylistSet() { }
+        [DataMember(Name = "Owned")]
+        public IList<RdioPlaylist> Owned { get; set; }
+        [DataMember(Name = "Collab")]
+        public IList<RdioPlaylist> Collab { get; set; }
+        [DataMember(Name = "Subscribed")]
+        public IList<RdioPlaylist> Subscribed { get; set; }
     }
 }

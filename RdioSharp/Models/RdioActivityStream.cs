@@ -2,7 +2,7 @@
 
 namespace RdioSharp.Models
 {
-    public class RdioActivityStream
+    public class RdioActivityStream : IRdioBaseObject
     {
         public long LastId { get; private set; }
         public RdioUser User { get; private set; }

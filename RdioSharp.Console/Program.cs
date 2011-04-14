@@ -31,8 +31,10 @@ namespace RdioSharp.Console
                                          manager.AccessKey, manager.AccessKeySecret);
             }
 
-            System.Console.WriteLine("Searching.");
-            var activity = manager.GetActivityStream(manager.CurrentUser().Key);
+            var lists = manager.GetPlaylists();
+            System.Console.WriteLine(lists.Owned.Count);
+            //System.Console.WriteLine("Getting activity.");
+            //var activity = manager.GetActivityStream(manager.CurrentUser().Key);
             System.Console.WriteLine("Press any key to continue.");
             System.Console.ReadKey();
         }

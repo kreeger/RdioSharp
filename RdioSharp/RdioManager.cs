@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Script.Serialization;
 
 using RdioSharp.Enum;
 using RdioSharp.Models;
@@ -13,6 +14,11 @@ namespace RdioSharp
 {
     public class RdioManager : IRdioManager
     {
+        #region Private properties.
+
+        private readonly JavaScriptSerializer _serializer;
+
+        #endregion
 
         #region Public properties.
 
@@ -45,6 +51,7 @@ namespace RdioSharp
         {
             CallBackUrl = !string.IsNullOrEmpty(callbackUrl) ? callbackUrl : "oob";
             SetCredentials(consumerKey, consumerSecret, accessKey, accessSecret);
+            _serializer = new JavaScriptSerializer();
         }
 
         #endregion
@@ -134,7 +141,7 @@ namespace RdioSharp
 		                       };
 			
 			var result = MakeWebRequest(postData);
-		    return RdioFunctions.ParseJSONToBooleanResult(result);
+            return bool.Parse(result);
 		}
 
         /// <summary>
@@ -149,7 +156,7 @@ namespace RdioSharp
                                };
 
             var result = MakeWebRequest(postData);
-            return RdioFunctions.ParseJSONToBooleanResult(result);
+            return bool.Parse(result);
         }
 
         /// <summary>
@@ -165,7 +172,7 @@ namespace RdioSharp
                                };
             
             var result = MakeWebRequest(postData);
-            return RdioFunctions.ParseJSONToBooleanResult(result);
+            return bool.Parse(result);
         }
 
         /// <summary>
@@ -182,9 +189,10 @@ namespace RdioSharp
                                    {"tracks", string.Join(",", tracks)}
                                };
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
-            
+
             var result = MakeWebRequest(postData);
-            return RdioFunctions.ParseJSONStringToRdioObject(result) as RdioPlaylist;
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<RdioPlaylist>));
+            return ((RdioResult<RdioPlaylist>)deserialized).Result;
         }
 
         /// <summary>
@@ -196,7 +204,8 @@ namespace RdioSharp
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
-            return RdioFunctions.ParseJSONStringToRdioObject(result) as RdioUser;
+            var deserialized = _serializer.Deserialize(result, typeof (RdioResult<RdioUser>));
+            return ((RdioResult<RdioUser>) deserialized).Result;
         }
 
         /// <summary>
@@ -211,7 +220,7 @@ namespace RdioSharp
                                };
             
             var result = MakeWebRequest(postData);
-            return RdioFunctions.ParseJSONToBooleanResult(result);
+            return bool.Parse(result);
         }
 
         /// <summary>
@@ -224,7 +233,8 @@ namespace RdioSharp
             else if (vanityName != null) postData.Add("vanityName", vanityName);
 
             var result = MakeWebRequest(postData);
-            return RdioFunctions.ParseJSONStringToRdioObject(result) as RdioUser;
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<RdioUser>));
+            return ((RdioResult<RdioUser>)deserialized).Result;
         }
 
         /// <summary>
@@ -240,7 +250,7 @@ namespace RdioSharp
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
-            return RdioFunctions.ParseJSONListStringToRdioObjectList(result);
+            return null;
         }
 
         /// <summary>
@@ -257,7 +267,7 @@ namespace RdioSharp
             if (lastId > 0) postData.Add("last_id", lastId.ToString());
 
             var result = MakeWebRequest(postData);
-            return RdioFunctions.ParseJSONStringToRdioActivityStream(result);
+            return null;
         }
 
         /// <summary>
@@ -343,7 +353,12 @@ namespace RdioSharp
         /// </summary>
         public RdioPlaylistSet GetPlaylists(IEnumerable<string> extras = null)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection { { "method", "getPlaylists" } };
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<RdioPlaylistSet>));
+            return ((RdioResult<RdioPlaylistSet>)deserialized).Result;
         }
 
         /// <summary>
@@ -367,7 +382,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetTracksForArtist"/>
         /// </summary>
-        public IEnumerable<RdioTrack> GetTracksForArtist(string artist, bool appearsOn, IEnumerable<string> extras, int start, int count)
+        public IEnumerable<RdioTrack> GetTracksForArtist(string artist, bool appearsOn = false,
+                                                         IEnumerable<string> extras = null, int start = 0, int count = 0)
         {
             throw new NotImplementedException();
         }
@@ -375,7 +391,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetTracksForArtistInCollection"/>
         /// </summary>
-        public IEnumerable<RdioTrack> GetTracksForArtistInCollection(string artist, string user, IEnumerable<string> extras)
+        public IEnumerable<RdioTrack> GetTracksForArtistInCollection(string artist, string user = null,
+                                                                     IEnumerable<string> extras = null)
         {
             throw new NotImplementedException();
         }
@@ -383,7 +400,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetTracksInCollection"/>
         /// </summary>
-        public IEnumerable<RdioTrack> GetTracksInCollection(string user, int start, int count, RdioSortBy sort, string query)
+        public IEnumerable<RdioTrack> GetTracksInCollection(string user = null, int start = 0, int count = 0,
+                                                            RdioSortBy sort = RdioSortBy.None, string query = null)
         {
             throw new NotImplementedException();
         }
@@ -407,7 +425,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.RemoveFromPlaylist"/>
         /// </summary>
-        public bool RemoveFromPlaylist(string playlist, IEnumerable<string> tracks, int index, int count)
+        public bool RemoveFromPlaylist(string playlist, IEnumerable<string> tracks, int index = 0, int count = 0)
         {
             throw new NotImplementedException();
         }
@@ -415,8 +433,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.Search"/>
         /// </summary>
-        public RdioSearchResult Search(string query, IList<RdioType> types, bool neverOr,
-			                           IList<string> extras, int start, int count)
+        public RdioSearchResult Search(string query, IList<RdioType> types, bool neverOr = true,
+                                       IList<string> extras = null, int start = 0, int count = 0)
         {
             var postData = new NameValueCollection
                                {
@@ -430,13 +448,13 @@ namespace RdioSharp
             if (count > 0) postData.Add("count", count.ToString());
 
             var result = MakeWebRequest(postData);
-            return RdioFunctions.ParseJSONStringToRdioSearchResult(result);
+            return null;
         }
 
         /// <summary>
         /// <see cref="IRdioManager.SearchSuggestions"/>
         /// </summary>
-        public IEnumerable<IRdioObject> SearchSuggestions(string query, IEnumerable<string> extras)
+        public IEnumerable<IRdioObject> SearchSuggestions(string query, IEnumerable<string> extras = null)
         {
             throw new NotImplementedException();
         }
@@ -507,7 +525,7 @@ namespace RdioSharp
         /// <param name="url">Full url to the web resource</param>
         /// <param name="postData">Data to post in querystring format</param>
         /// <returns>The web server response.</returns>
-        private static string DoWebRequest(string url, string postData)
+        private string DoWebRequest(string url, string postData)
         {
             string responseData = null;
             var webRequest = WebRequest.Create(url) as HttpWebRequest;

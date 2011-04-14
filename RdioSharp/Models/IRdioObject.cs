@@ -2,7 +2,7 @@
 
 namespace RdioSharp.Models
 {
-    public interface IRdioObject
+    public interface IRdioObject : IRdioBaseObject
     {
         string Key { get; set; }
         string Name { get; set; }
