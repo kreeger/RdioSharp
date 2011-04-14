@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using RdioSharp.Enum;
 using RdioSharp.Models;
@@ -152,8 +152,8 @@ namespace RdioSharp
         /// <param name="count">Optional. The maxiumum number of results to return.</param>
         /// <param name="extras">Optional. A list of additional fields to return.</param>
         /// <returns>A list of <see cref="RdioAlbum"/>s.</returns>
-        IEnumerable<RdioAlbum> GetNewReleases(RdioTimeframe timeframe = RdioTimeframe.None, int start = 0, int count = 0,
-                                              IEnumerable<string> extras = null);
+        IEnumerable<RdioAlbum> GetNewReleases(RdioTimeframe timeframe = RdioTimeframe.None, int start = 0,
+                                              int count = 0, IEnumerable<string> extras = null);
 
         /// <summary>
         /// Return the object that the supplied Rdio short-code is a representation of. Requires authentication.

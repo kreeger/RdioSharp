@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -172,7 +172,7 @@ namespace RdioSharp
         /// <see cref="IRdioManager.CreatePlaylist"/>
         /// </summary>
         public RdioPlaylist CreatePlaylist(string name, string description, IEnumerable<string> tracks,
-                                           IEnumerable<string> extras)
+                                           IEnumerable<string> extras = null)
         {
             var postData = new NameValueCollection
                                {
@@ -190,7 +190,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.CurrentUser"/>
         /// </summary>
-        public RdioUser CurrentUser(IEnumerable<string> extras)
+        public RdioUser CurrentUser(IEnumerable<string> extras = null)
         {
             var postData = new NameValueCollection {{"method", "currentUser"}};
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
@@ -217,7 +217,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.FindUser"/>
         /// </summary>
-        public RdioUser FindUser(string email, string vanityName)
+        public RdioUser FindUser(string email = null, string vanityName = null)
         {
             var postData = new NameValueCollection {{"method", "findUser"}};
             if (email != null) postData.Add("email", email);
@@ -230,7 +230,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.Get"/>
         /// </summary>
-        public IEnumerable<IRdioObject> Get(IEnumerable<string> keys, IEnumerable<string> extras)
+        public IEnumerable<IRdioObject> Get(IEnumerable<string> keys, IEnumerable<string> extras = null)
         {
             var postData = new NameValueCollection
                                {
@@ -246,7 +246,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetActivityStream"/>
         /// </summary>
-        public RdioActivityStream GetActivityStream(string user, RdioScope scope, long lastId)
+        public RdioActivityStream GetActivityStream(string user, RdioScope scope = RdioScope.Friends, long lastId = 0)
         {
             var postData = new NameValueCollection
                                {
@@ -263,7 +263,9 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetAlbumsForArtist"/>
         /// </summary>
-        public IEnumerable<RdioAlbum> GetAlbumsForArtist(string artist, bool featuring, IEnumerable<string> extras, int start, int count)
+        public IEnumerable<RdioAlbum> GetAlbumsForArtist(string artist, bool featuring = false,
+                                                         IEnumerable<string> extras = null, int start = 0,
+                                                         int count = 0)
         {
             throw new NotImplementedException();
         }
@@ -271,7 +273,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetAlbumsForArtistInCollection"/>
         /// </summary>
-        public IEnumerable<RdioAlbum> GetAlbumsForArtistInCollection(string artist, string user)
+        public IEnumerable<RdioAlbum> GetAlbumsForArtistInCollection(string artist, string user = null)
         {
             throw new NotImplementedException();
         }
@@ -279,7 +281,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetAlbumsInCollection"/>
         /// </summary>
-        public IEnumerable<RdioAlbum> GetAlbumsInCollection(string user, int start, int count, RdioSortBy sort, string query)
+        public IEnumerable<RdioAlbum> GetAlbumsInCollection(string user = null, int start = 0, int count = 0,
+                                                            RdioSortBy sort = RdioSortBy.None, string query = null)
         {
             throw new NotImplementedException();
         }
@@ -287,7 +290,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetHeavyRotation"/>
         /// </summary>
-        public IEnumerable<RdioArtist> GetArtistsInCollection(string user, int start, int count, RdioSortBy sort, string query)
+        public IEnumerable<RdioArtist> GetArtistsInCollection(string user = null, int start = 0, int count = 0,
+                                                              RdioSortBy sort = RdioSortBy.None, string query = null)
         {
             throw new NotImplementedException();
         }
@@ -295,7 +299,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetHeavyRotation"/>
         /// </summary>
-        public IEnumerable<IRdioObject> GetHeavyRotation(string user, RdioType type, bool friends, int limit)
+        public IEnumerable<IRdioObject> GetHeavyRotation(string user = null, RdioType type = RdioType.Album,
+                                                         bool friends = false, int limit = 0)
         {
             throw new NotImplementedException();
         }
@@ -303,7 +308,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetNewReleases"/>
         /// </summary>
-        public IEnumerable<RdioAlbum> GetNewReleases(RdioTimeframe timeframe, int start, int count, IEnumerable<string> extras)
+        public IEnumerable<RdioAlbum> GetNewReleases(RdioTimeframe timeframe = RdioTimeframe.None, int start = 0,
+                                                     int count = 0, IEnumerable<string> extras = null)
         {
             throw new NotImplementedException();
         }
@@ -327,7 +333,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetPlaybackToken"/>
         /// </summary>
-        public string GetPlaybackToken(string domain)
+        public string GetPlaybackToken(string domain = null)
         {
             throw new NotImplementedException();
         }
@@ -335,7 +341,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetPlaylists"/>
         /// </summary>
-        public RdioPlaylistSet GetPlaylists(IEnumerable<string> extras)
+        public RdioPlaylistSet GetPlaylists(IEnumerable<string> extras = null)
         {
             throw new NotImplementedException();
         }
@@ -343,7 +349,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetTopCharts"/>
         /// </summary>
-        public IEnumerable<IRdioObject> GetTopCharts(RdioType type, int start, int count, IEnumerable<string> extras)
+        public IEnumerable<IRdioObject> GetTopCharts(RdioType type, int start = 0, int count = 0,
+                                                     IEnumerable<string> extras = null)
         {
             throw new NotImplementedException();
         }
@@ -351,7 +358,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.GetTracksForAlbumInCollection"/>
         /// </summary>
-        public IEnumerable<RdioTrack> GetTracksForAlbumInCollection(string album, string user, IEnumerable<string> extras)
+        public IEnumerable<RdioTrack> GetTracksForAlbumInCollection(string album, string user = null,
+                                                                    IEnumerable<string> extras = null)
         {
             throw new NotImplementedException();
         }
