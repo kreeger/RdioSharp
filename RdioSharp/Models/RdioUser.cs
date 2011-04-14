@@ -17,7 +17,8 @@ namespace RdioSharp.Models
         [DataMember]
         public string BaseIcon { get; set; }
         [DataMember]
-        public RdioType RdioType { get; set; }
+        public string Type { get; set; }
+        public RdioType RdioType { get { return RdioFunctions.ParseRdioType(Type); } }
         [DataMember]
         public string FirstName { get; set; }
         [DataMember]

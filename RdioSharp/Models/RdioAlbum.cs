@@ -20,9 +20,10 @@ namespace RdioSharp.Models
         [DataMember]
         public string BaseIcon { get; set; }
         [DataMember]
-        public RdioType RdioType { get; set; }
+        public string Type { get; set; }
+        public RdioType RdioType { get { return RdioFunctions.ParseRdioType(Type); } }
         [DataMember]
-        public string ArtistName { get; set; }
+        public string Artist { get; set; }
         [DataMember]
         public string ArtistUrl { get; set; }
         [DataMember]
@@ -32,9 +33,9 @@ namespace RdioSharp.Models
         [DataMember]
         public bool IsClean { get; set; }
         [DataMember(Name = "Length")]
-        public int TrackCount { get; set; }
+        public int Length { get; set; }
         [DataMember]
-        public decimal Price { get; set; }
+        public string Price { get; set; }
         [DataMember]
         public bool CanStream { get; set; }
         [DataMember]
@@ -46,7 +47,7 @@ namespace RdioSharp.Models
         [DataMember]
         public string EmbedUrl { get; set; }
         [DataMember]
-        public TimeSpan Duration { get; set; }
+        public int Duration { get; set; }
         [DataMember]
         public DateTime ReleaseDate { get; set; }
         [DataMember(EmitDefaultValue = false, IsRequired = false)]

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using RdioSharp.Enum;
 using RdioSharp.Models;
 
@@ -31,8 +32,11 @@ namespace RdioSharp.Console
                                          manager.AccessKey, manager.AccessKeySecret);
             }
 
-            var lists = manager.GetPlaylists();
-            System.Console.WriteLine(lists.Owned.Count);
+            var results = manager.GetTopCharts(RdioType.Playlist).ToList();
+            foreach (var bit in results.Select(r => string.Format("{0}, Key: {1}", r.Name, r.Key)))
+            {
+                System.Console.WriteLine(bit);
+            }
             //System.Console.WriteLine("Getting activity.");
             //var activity = manager.GetActivityStream(manager.CurrentUser().Key);
             System.Console.WriteLine("Press any key to continue.");

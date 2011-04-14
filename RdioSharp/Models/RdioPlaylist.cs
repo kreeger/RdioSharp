@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 using RdioSharp.Enum;
 
@@ -17,9 +16,10 @@ namespace RdioSharp.Models
         [DataMember]
         public string Icon { get; set; }
         [DataMember]
-        public string BaseIcon { get; set; }
+        public string Type { get; set; }
+        public RdioType RdioType { get { return RdioFunctions.ParseRdioType(Type); } }
         [DataMember]
-        public RdioType RdioType { get; set; }
+        public string BaseIcon { get; set; }
         [DataMember]
         public int Length { get; set; }
         [DataMember]

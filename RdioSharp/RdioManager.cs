@@ -139,9 +139,10 @@ namespace RdioSharp
 		                           {"method", "addFriend"},
 		                           {"user", user}
 		                       };
-			
-			var result = MakeWebRequest(postData);
-            return bool.Parse(result);
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            return bool.Parse(((RdioResult<string>)deserialized).Result);
 		}
 
         /// <summary>
@@ -156,7 +157,8 @@ namespace RdioSharp
                                };
 
             var result = MakeWebRequest(postData);
-            return bool.Parse(result);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
         /// <summary>
@@ -170,9 +172,10 @@ namespace RdioSharp
                                    {"playlist", playlist},
                                    {"tracks", string.Join(",", tracks)}
                                };
-            
+
             var result = MakeWebRequest(postData);
-            return bool.Parse(result);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
         /// <summary>
@@ -258,16 +261,7 @@ namespace RdioSharp
         /// </summary>
         public RdioActivityStream GetActivityStream(string user, RdioScope scope = RdioScope.Friends, long lastId = 0)
         {
-            var postData = new NameValueCollection
-                               {
-                                   {"method", "getActivityStream"},
-                                   {"user", user},
-                                   {"scope", scope.ToString()}
-                               };
-            if (lastId > 0) postData.Add("last_id", lastId.ToString());
-
-            var result = MakeWebRequest(postData);
-            return null;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -277,7 +271,19 @@ namespace RdioSharp
                                                          IEnumerable<string> extras = null, int start = 0,
                                                          int count = 0)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getAlbumsForArtist"},
+                                   {"artist", artist}
+                               };
+            if (featuring) postData.Add("featuring", featuring.ToString());
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
+            if (start > 0) postData.Add("start", start.ToString());
+            if (count > 0) postData.Add("count", count.ToString());
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+            return ((RdioResult<IList<RdioAlbum>>)deserialized).Result;
         }
 
         /// <summary>
@@ -285,7 +291,16 @@ namespace RdioSharp
         /// </summary>
         public IEnumerable<RdioAlbum> GetAlbumsForArtistInCollection(string artist, string user = null)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getAlbumsForArtistInCollection"},
+                                   {"artist", artist}
+                               };
+            if (!string.IsNullOrEmpty(user)) postData.Add("user", user);
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+            return ((RdioResult<IList<RdioAlbum>>)deserialized).Result;
         }
 
         /// <summary>
@@ -294,7 +309,19 @@ namespace RdioSharp
         public IEnumerable<RdioAlbum> GetAlbumsInCollection(string user = null, int start = 0, int count = 0,
                                                             RdioSortBy sort = RdioSortBy.None, string query = null)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getAlbumsInCollection"}
+                               };
+            if (!string.IsNullOrEmpty(user)) postData.Add("user", user);
+            if (start > 0) postData.Add("start", start.ToString());
+            if (count > 0) postData.Add("count", count.ToString());
+            if (sort != RdioSortBy.None) postData.Add("sort", sort.ToString());
+            if (!string.IsNullOrEmpty(query)) postData.Add("query", query);
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+            return ((RdioResult<IList<RdioAlbum>>)deserialized).Result;
         }
 
         /// <summary>
@@ -303,7 +330,19 @@ namespace RdioSharp
         public IEnumerable<RdioArtist> GetArtistsInCollection(string user = null, int start = 0, int count = 0,
                                                               RdioSortBy sort = RdioSortBy.None, string query = null)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getArtistsInCollection"}
+                               };
+            if (!string.IsNullOrEmpty(user)) postData.Add("user", user);
+            if (start > 0) postData.Add("start", start.ToString());
+            if (count > 0) postData.Add("count", count.ToString());
+            if (sort != RdioSortBy.None) postData.Add("sort", sort.ToString());
+            if (!string.IsNullOrEmpty(query)) postData.Add("query", query);
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioArtist>>));
+            return ((RdioResult<IList<RdioArtist>>)deserialized).Result;
         }
 
         /// <summary>
@@ -321,7 +360,18 @@ namespace RdioSharp
         public IEnumerable<RdioAlbum> GetNewReleases(RdioTimeframe timeframe = RdioTimeframe.None, int start = 0,
                                                      int count = 0, IEnumerable<string> extras = null)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getNewReleases"}
+                               };
+            if (timeframe != RdioTimeframe.None) postData.Add("timeframe", timeframe.ToString());
+            if (start > 0) postData.Add("start", start.ToString());
+            if (count > 0) postData.Add("count", count.ToString());
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+            return ((RdioResult<IList<RdioAlbum>>)deserialized).Result;
         }
 
         /// <summary>
@@ -345,7 +395,15 @@ namespace RdioSharp
         /// </summary>
         public string GetPlaybackToken(string domain = null)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getPlaybackToken"}
+                               };
+            if (!string.IsNullOrEmpty(domain)) postData.Add("domain", domain);
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            return ((RdioResult<string>)deserialized).Result;
         }
 
         /// <summary>
@@ -367,7 +425,33 @@ namespace RdioSharp
         public IEnumerable<IRdioObject> GetTopCharts(RdioType type, int start = 0, int count = 0,
                                                      IEnumerable<string> extras = null)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getTopCharts"},
+                                   {"type", type.ToString()}
+                               };
+            if (start > 0) postData.Add("start", start.ToString());
+            if (count > 0) postData.Add("count", count.ToString());
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
+
+            var result = MakeWebRequest(postData);
+            switch (type)
+            {
+                case RdioType.Album:
+                    var albums = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+                    return ((RdioResult<IList<RdioAlbum>>)albums).Result;
+                case RdioType.Artist:
+                    var artists = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioArtist>>));
+                    return ((RdioResult<IList<RdioArtist>>)artists).Result;
+                case RdioType.Track:
+                    var tracks = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
+                    return ((RdioResult<IList<RdioTrack>>)tracks).Result;
+                case RdioType.Playlist:
+                    var playlists = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioPlaylist>>));
+                    return ((RdioResult<IList<RdioPlaylist>>)playlists).Result;
+                default:
+                    return null;
+            }
         }
 
         /// <summary>
@@ -376,7 +460,17 @@ namespace RdioSharp
         public IEnumerable<RdioTrack> GetTracksForAlbumInCollection(string album, string user = null,
                                                                     IEnumerable<string> extras = null)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getTracksForAlbumInCollection"},
+                                   {"album", album}
+                               };
+            if (!string.IsNullOrEmpty(user)) postData.Add("user", user);
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
+            return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
         /// <summary>
@@ -385,7 +479,19 @@ namespace RdioSharp
         public IEnumerable<RdioTrack> GetTracksForArtist(string artist, bool appearsOn = false,
                                                          IEnumerable<string> extras = null, int start = 0, int count = 0)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getTracksForArtist"},
+                                   {"artist", artist}
+                               };
+            if (appearsOn) postData.Add("appearsOn", appearsOn.ToString());
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
+            if (start > 0) postData.Add("start", start.ToString());
+            if (count > 0) postData.Add("count", count.ToString());
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
+            return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
         /// <summary>
@@ -394,7 +500,17 @@ namespace RdioSharp
         public IEnumerable<RdioTrack> GetTracksForArtistInCollection(string artist, string user = null,
                                                                      IEnumerable<string> extras = null)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getTracksForArtistInCollection"},
+                                   {"artist", artist}
+                               };
+            if (!string.IsNullOrEmpty(user)) postData.Add("user", user);
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
+            return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
         /// <summary>
@@ -403,7 +519,19 @@ namespace RdioSharp
         public IEnumerable<RdioTrack> GetTracksInCollection(string user = null, int start = 0, int count = 0,
                                                             RdioSortBy sort = RdioSortBy.None, string query = null)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getTracksInCollection"}
+                               };
+            if (!string.IsNullOrEmpty(user)) postData.Add("user", user);
+            if (start > 0) postData.Add("start", start.ToString());
+            if (count > 0) postData.Add("count", count.ToString());
+            if (sort != RdioSortBy.None) postData.Add("sort", sort.ToString());
+            if (!string.IsNullOrEmpty(query)) postData.Add("query", query);
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
+            return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
         /// <summary>
@@ -411,7 +539,15 @@ namespace RdioSharp
         /// </summary>
         public bool RemoveFriend(string user)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "removeFriend"},
+                                   {"user", user}
+                               };
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
         /// <summary>
@@ -419,7 +555,15 @@ namespace RdioSharp
         /// </summary>
         public bool RemoveFromCollection(IEnumerable<string> keys)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "removeFromCollection"},
+                                   {"keys", string.Join(",", keys)}
+                               };
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
         /// <summary>
@@ -427,7 +571,18 @@ namespace RdioSharp
         /// </summary>
         public bool RemoveFromPlaylist(string playlist, IEnumerable<string> tracks, int index = 0, int count = 0)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "removeFromPlaylist"},
+                                   {"playlist", playlist},
+                                   {"tracks", string.Join(",", tracks)},
+                                   {"index", index.ToString()},
+                                   {"count", count <= 0 ? tracks.Count().ToString() : count.ToString()}
+                               };
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
         /// <summary>
@@ -448,7 +603,8 @@ namespace RdioSharp
             if (count > 0) postData.Add("count", count.ToString());
 
             var result = MakeWebRequest(postData);
-            return null;
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<RdioSearchResult>));
+            return ((RdioResult<RdioSearchResult>)deserialized).Result;
         }
 
         /// <summary>

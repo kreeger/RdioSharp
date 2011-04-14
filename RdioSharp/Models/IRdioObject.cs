@@ -9,6 +9,7 @@ namespace RdioSharp.Models
         string Url { get; set; }
         string Icon { get; set; }
         string BaseIcon { get; set; }
-        RdioType RdioType { get; set; }
+        string Type { get; set; }
+        RdioType RdioType { get; }
     }
 }

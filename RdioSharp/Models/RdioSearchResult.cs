@@ -1,23 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace RdioSharp.Models
 {
+    [DataContract]
     public class RdioSearchResult
     {
-        public int ResultCount { get; set; }
-        public IList<RdioAlbum> Albums { get; set; }
-        public IList<RdioArtist> Artists { get; set; }
-        public IList<RdioUser> Users { get; set; }
-        public IList<RdioPlaylist> Playlists { get; set; }
-        public IList<RdioTrack> Tracks { get; set; }
-		
-		internal RdioSearchResult()
-		{
-		    Albums = new List<RdioAlbum>();
-            Artists = new List<RdioArtist>();
-            Users = new List<RdioUser>();
-            Playlists = new List<RdioPlaylist>();
-            Tracks = new List<RdioTrack>();
-		}
+        [DataMember]
+        public int NumberResults { get; set; }
+        [DataMember]
+        public IList<IRdioObject> Results { get; set; }
+
+        public RdioSearchResult() { }
     }
 }

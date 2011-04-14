@@ -26,6 +26,11 @@ namespace RdioSharp
             var dateList = input.Split('-');
             return new DateTime(int.Parse(dateList[0]), int.Parse(dateList[1]), int.Parse(dateList[2]));
         }
+
+        public static string Pluralize(this RdioType type)
+        {
+            return type + "s";
+        }
     }
 }
 
