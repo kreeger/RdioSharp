@@ -14,14 +14,59 @@ Also, this is a shining example of work-in-progress. You have been warned.
 
 ## Requirements
 
- * patience for me
+ * Microsoft .NET Framework 4
 
 ## Usage
 
-*Coming soon*. I'll be implementing test cases in the `RdioSharpTest` class, too, which ought to help with real-world usage examples.
+*More coming soon*. I'll be implementing test cases in the `RdioSharpTest` class, too, which ought to help with real-world usage examples.
+
+            // Instantiate the manager.
+            var manager = new RdioManager(consumerKey, consumerSecret, accessKey, accessSecret);
+
+            // How to handle authorization.
+            if (!manager.IsAuthorized)
+            {
+                System.Console.WriteLine("Getting request token.");
+                manager.GenerateRequestTokenAndLoginUrl();
+                System.Console.WriteLine(string.Format("Authorize at this url: {0}", manager.LoginUrl));
+                var p = new Process {StartInfo = new ProcessStartInfo(manager.LoginUrl)};
+                p.Start();
+                System.Console.Write("What is the pin number? ");
+                var pin = System.Console.ReadLine();
+
+                System.Console.WriteLine(string.Format("Authorizing for pin # {0}.", pin));
+                manager.Authorize(pin);
+                System.Console.WriteLine("Now have credentials!\nAccess key: {0}\nAccess key secret: {1}",
+                                         manager.AccessKey, manager.AccessKeySecret);
+            }
+
+            // Get the current user.
+            var currentUser = manager.CurrentUser("s1250");
+            System.Console.WriteLine(string.Format("Getting activity stream for {0}.", currentUser.Name));
+
+            // Get the activity stream and flip through the contents of the activity stream.
+            var rdio = manager.GetActivityStream(currentUser.Key);
+            foreach (var item in rdio.Updates)
+            {
+                System.Console.WriteLine(string.Format("Update by {0} at {1}", item.Owner.Name, item.Owner.Key));
+                System.Console.WriteLine(string.Format("Update type: {0}", item.UpdateType));
+                if (item.Albums.Boolify())
+                    foreach (var album in item.Albums)
+                    {
+                        System.Console.WriteLine(string.Format("Album: '{0}' by {1}", album.Name, album.Artist));
+                    }
+                if (item.ReviewedItem.Boolify())
+                    System.Console.WriteLine(string.Format("Reviewed '{0}': {1}", item.ReviewedItem.RdioType,
+                                                           item.ReviewedItem.Name));
+                if (item.Comment.Boolify())
+                    System.Console.WriteLine(string.Format("Comment: {0}", item.Comment));
+            }
+
+            System.Console.WriteLine("Press any key to continue.");
+            System.Console.ReadKey();
 	
 ## Version history
 
 Because you all care.
 
- * **Version 0.1**: Initial release. Includes a couple of data models, unauthenticated API call logic, and one call.
+ * **Version 0.1**: Initial release. Includes all API calls.
