@@ -231,13 +231,53 @@ namespace RdioSharp
             return resultSet;
         }
 
+        public static RdioActivityStream ConvertDictionaryToRdioActivityStream(IDictionary<string, object> d)
+        {
+            var stream = new RdioActivityStream
+                             {
+                                 User =
+                                     ConvertDictionaryToRdioObject(d["user"] as IDictionary<string, object>) as RdioUser,
+                                 LastId = (int) d["last_id"],
+                                 Updates = new List<RdioActivityItem>()
+                             };
+            var updates = new List<object>((object[]) d["updates"]);
+            foreach (IDictionary<string, object> u in updates)
+            {
+                var item = new RdioActivityItem
+                               {
+                                   Date = DateTime.Parse((string) u["date"]),
+                                   Owner =
+                                       ConvertDictionaryToRdioObject(u["owner"] as IDictionary<string, object>) as
+                                       RdioUser,
+                                   UpdateTypeId = (int) u["update_type"]
+                               };
+                object albums, comment, reviewedItem;
+                if (u.TryGetValue("albums", out albums))
+                {
+                    item.Albums = new List<RdioAlbum>();
+                    var albumObjects = new List<object>((object[])albums);
+                    foreach (IDictionary<string, object> a in albumObjects)
+                    {
+                        item.Albums.Add(ConvertDictionaryToRdioObject(a) as RdioAlbum);
+                    }
+                }
+                if (u.TryGetValue("comment", out comment))
+                    item.Comment = (string)comment;
+                if (u.TryGetValue("reviewedItem", out reviewedItem))
+                    item.ReviewedItem = ConvertDictionaryToRdioObject((IDictionary<string, object>) reviewedItem);
+
+                stream.Updates.Add(item);
+            }
+            return stream;
+        }
+
         public static DateTime ParseStringToDateTime(string input)
         {
             var dateList = input.Split('-');
             return new DateTime(int.Parse(dateList[0]), int.Parse(dateList[1]), int.Parse(dateList[2]));
         }
 
-        public static DateTime ConvertFromUnixTimestamp(double timestamp)
+        public static DateTime DeUnixify(this double timestamp)
         {
             var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
             return origin.AddSeconds(timestamp);
@@ -246,6 +286,20 @@ namespace RdioSharp
         public static string Pluralize(this RdioType type)
         {
             return type + "s";
+        }
+
+        public static bool Boolify(this object obj)
+        {
+            if (obj == null) return false;
+            if (obj is int && (int)obj == 0) return false;
+            if (obj is long && (long)obj == 0) return false;
+            if (obj is decimal && (decimal)obj == 0) return false;
+            if (obj is double && (double)obj == 0) return false;
+            if (obj is string && (string)obj == string.Empty) return false;
+            if (obj is DateTime && ((DateTime)obj == DateTime.MinValue || (DateTime)obj == DateTime.MaxValue))
+                return false;
+            if (obj is IEnumerable<object> && ((IEnumerable<object>)obj).Count() == 0) return false;
+            return true;
         }
     }
 }

@@ -7,13 +7,16 @@ namespace RdioSharp.Models
 {
     public class RdioActivityItem
     {
-        public RdioUser Owner { get; private set; }
-        public DateTime Date{ get; private set; }
-        public RdioUpdateType UpdateType { get; private set; }
-        public int UpdateTypeId { get; private set; }
-        public IList<RdioAlbum> Albums { get; private set; }
-        public IRdioObject ReviewedItem { get; private set; }
-        public string Comment { get; private set; }
+        public RdioUser Owner { get; set; }
+        public DateTime Date{ get; set; }
+        public RdioUpdateType UpdateType
+        {
+            get { return (RdioUpdateType)System.Enum.ToObject(typeof(RdioUpdateType), UpdateTypeId); }
+        }
+        public int UpdateTypeId { get; set; }
+        public IList<RdioAlbum> Albums { get; set; }
+        public IRdioObject ReviewedItem { get; set; }
+        public string Comment { get; set; }
 		
 		internal RdioActivityItem() { }
     }

@@ -66,6 +66,14 @@ namespace RdioSharp
         /// <summary>
         /// Fetch one or more objects from Rdio. Does not require authentication.
         /// </summary>
+        /// <param name="key">Required. A single key for the object to fetch.</param>
+        /// <param name="extras">Optional. A list of additional fields to return.</param>
+        /// <returns>An object with 5 lists, one for each type of object that can be returned.</returns>
+        IRdioObject Get(string key, IEnumerable<string> extras = null);
+
+        /// <summary>
+        /// Fetch one or more objects from Rdio. Does not require authentication.
+        /// </summary>
         /// <param name="keys">Required. A list of keys for the objects to fetch.</param>
         /// <param name="extras">Optional. A list of additional fields to return.</param>
         /// <returns>An object with 5 lists, one for each type of object that can be returned.</returns>

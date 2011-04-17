@@ -254,7 +254,21 @@ namespace RdioSharp
         }
 
         /// <summary>
-        /// <see cref="IRdioManager.Get"/>
+        /// <see cref="IRdioManager.Get(string, IEnumerable{string})"/>
+        /// </summary>
+        public IRdioObject Get(string key, IEnumerable<string> extras = null)
+        {
+            var resultSet = Get(new List<string> {key}, extras);
+            if (resultSet.Albums.Boolify()) return resultSet.Albums.FirstOrDefault();
+            if (resultSet.Artists.Boolify()) return resultSet.Artists.FirstOrDefault();
+            if (resultSet.Playlists.Boolify()) return resultSet.Playlists.FirstOrDefault();
+            if (resultSet.Tracks.Boolify()) return resultSet.Tracks.FirstOrDefault();
+            if (resultSet.Users.Boolify()) return resultSet.Users.FirstOrDefault();
+            return null;
+        }
+
+        /// <summary>
+        /// <see cref="IRdioManager.Get(IEnumerable{string}, IEnumerable{string})"/>
         /// </summary>
         public RdioResultSet Get(IEnumerable<string> keys, IEnumerable<string> extras = null)
         {
@@ -263,7 +277,7 @@ namespace RdioSharp
                                    {"method", "get"},
                                    {"keys", string.Join(",", keys)}
                                };
-            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
+            if (extras.Boolify()) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
             var deserialized = Deserialize(result, typeof(RdioResult<object>));
@@ -276,7 +290,18 @@ namespace RdioSharp
         /// </summary>
         public RdioActivityStream GetActivityStream(string user, RdioScope scope = RdioScope.Friends, long lastId = 0)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getActivityStream"},
+                                   {"user", user},
+                                   {"scope", scope.ToString()}
+                               };
+            if (lastId.Boolify()) postData.Add("last_id", lastId.ToString());
+
+            var result = MakeWebRequest(postData);
+            var deserialized = Deserialize(result, typeof(RdioResult<object>));
+            var results = ((RdioResult<object>)deserialized).Result as Dictionary<string, object>;
+            return results != null ? RdioFunctions.ConvertDictionaryToRdioActivityStream(results) : null;
         }
 
         /// <summary>

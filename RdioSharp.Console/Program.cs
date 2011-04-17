@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-
-using RdioSharp.Enum;
-using RdioSharp.Models;
+﻿using System.Diagnostics;
 
 namespace RdioSharp.Console
 {
@@ -33,13 +28,23 @@ namespace RdioSharp.Console
                                          manager.AccessKey, manager.AccessKeySecret);
             }
 
-            var rdio = manager.SearchSuggestions("Foo Fighters");
-            foreach (var result in rdio.Artists)
+            System.Console.WriteLine("Getting activity stream.");
+            var rdio = manager.GetActivityStream("s1250");
+            foreach (var item in rdio.Updates)
             {
-                System.Console.WriteLine(result.Name);
+                System.Console.WriteLine(string.Format("Update by {0} at {1}", item.Owner.Name, item.Owner.Key));
+                System.Console.WriteLine(string.Format("Update type: {0}", item.UpdateType));
+                if (item.Albums.Boolify())
+                    foreach (var album in item.Albums)
+                    {
+                        System.Console.WriteLine(string.Format("Album: '{0}' by {1}", album.Name, album.Artist));
+                    }
+                if (item.ReviewedItem.Boolify())
+                    System.Console.WriteLine(string.Format("Reviewed '{0}': {1}", item.ReviewedItem.RdioType,
+                                                           item.ReviewedItem.Name));
+                if (item.Comment.Boolify())
+                    System.Console.WriteLine(string.Format("Comment: {0}", item.Comment));
             }
-            //System.Console.WriteLine("Getting activity.");
-            //var activity = manager.GetActivityStream(manager.CurrentUser().Key);
             System.Console.WriteLine("Press any key to continue.");
             System.Console.ReadKey();
         }
