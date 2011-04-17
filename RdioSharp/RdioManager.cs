@@ -134,7 +134,7 @@ namespace RdioSharp
         /// </summary>
         private object Deserialize(string toDeserialize, Type type)
         {
-            return _serializer.Deserialize(_serializer, toDeserialize, type, 0);
+            return _serializer.Deserialize(toDeserialize);
         }
 
         #endregion
