@@ -127,8 +127,20 @@ namespace RdioSharp
 
         #endregion
 
+        #region Private methods
+
+        /// <summary>
+        /// This method is refactored to help account for changes between .NET 3.5 and .NET 4.0.
+        /// </summary>
+        private object Deserialize(string toDeserialize, Type type)
+        {
+            return _serializer.Deserialize(toDeserialize, type);
+        }
+
+        #endregion
+
         #region Rdio API methods
-		
+
         /// <summary>
         /// <see cref="IRdioManager.AddFriend"/>
         /// </summary>
@@ -141,7 +153,7 @@ namespace RdioSharp
 		                       };
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            var deserialized = Deserialize(result, typeof(RdioResult<string>));
             return bool.Parse(((RdioResult<string>)deserialized).Result);
 		}
 
@@ -157,7 +169,7 @@ namespace RdioSharp
                                };
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            var deserialized = Deserialize(result, typeof(RdioResult<string>));
             return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
@@ -174,7 +186,7 @@ namespace RdioSharp
                                };
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            var deserialized = Deserialize(result, typeof(RdioResult<string>));
             return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
@@ -194,7 +206,7 @@ namespace RdioSharp
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<RdioPlaylist>));
+            var deserialized = Deserialize(result, typeof(RdioResult<RdioPlaylist>));
             return ((RdioResult<RdioPlaylist>)deserialized).Result;
         }
 
@@ -207,7 +219,7 @@ namespace RdioSharp
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof (RdioResult<RdioUser>));
+            var deserialized = Deserialize(result, typeof (RdioResult<RdioUser>));
             return ((RdioResult<RdioUser>) deserialized).Result;
         }
 
@@ -223,7 +235,7 @@ namespace RdioSharp
                                };
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            var deserialized = Deserialize(result, typeof(RdioResult<string>));
             return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
@@ -237,7 +249,7 @@ namespace RdioSharp
             else if (vanityName != null) postData.Add("vanityName", vanityName);
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<RdioUser>));
+            var deserialized = Deserialize(result, typeof(RdioResult<RdioUser>));
             return ((RdioResult<RdioUser>)deserialized).Result;
         }
 
@@ -254,7 +266,7 @@ namespace RdioSharp
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<object>));
+            var deserialized = Deserialize(result, typeof(RdioResult<object>));
             var results = ((RdioResult<object>) deserialized).Result as Dictionary<string, object>;
             return results != null ? RdioFunctions.ConvertDictionaryToRdioResultSet(results) : null;
         }
@@ -285,7 +297,7 @@ namespace RdioSharp
             if (count > 0) postData.Add("count", count.ToString());
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+            var deserialized = Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
             return ((RdioResult<IList<RdioAlbum>>)deserialized).Result;
         }
 
@@ -302,7 +314,7 @@ namespace RdioSharp
             if (!string.IsNullOrEmpty(user)) postData.Add("user", user);
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+            var deserialized = Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
             return ((RdioResult<IList<RdioAlbum>>)deserialized).Result;
         }
 
@@ -323,7 +335,7 @@ namespace RdioSharp
             if (!string.IsNullOrEmpty(query)) postData.Add("query", query);
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+            var deserialized = Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
             return ((RdioResult<IList<RdioAlbum>>)deserialized).Result;
         }
 
@@ -344,7 +356,7 @@ namespace RdioSharp
             if (!string.IsNullOrEmpty(query)) postData.Add("query", query);
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioArtist>>));
+            var deserialized = Deserialize(result, typeof(RdioResult<IList<RdioArtist>>));
             return ((RdioResult<IList<RdioArtist>>)deserialized).Result;
         }
 
@@ -367,10 +379,10 @@ namespace RdioSharp
             switch (type)
             {
                 case RdioType.Artist:
-                    var artists = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioArtist>>));
+                    var artists = Deserialize(result, typeof(RdioResult<IList<RdioArtist>>));
                     return ((RdioResult<IList<RdioArtist>>)artists).Result;
                 case RdioType.Album:
-                    var albums = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+                    var albums = Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
                     return ((RdioResult<IList<RdioAlbum>>)albums).Result;
                 default:
                     return null;
@@ -393,7 +405,7 @@ namespace RdioSharp
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+            var deserialized = Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
             return ((RdioResult<IList<RdioAlbum>>)deserialized).Result;
         }
 
@@ -409,7 +421,7 @@ namespace RdioSharp
                                };
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<object>));
+            var deserialized = Deserialize(result, typeof(RdioResult<object>));
             var results = (Dictionary<string, object>)((RdioResult<object>)deserialized).Result;
             return RdioFunctions.ConvertDictionaryToRdioObject(results);
         }
@@ -426,7 +438,7 @@ namespace RdioSharp
                                };
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<object>));
+            var deserialized = Deserialize(result, typeof(RdioResult<object>));
             var results = (Dictionary<string, object>)((RdioResult<object>)deserialized).Result;
             return RdioFunctions.ConvertDictionaryToRdioObject(results);
         }
@@ -443,7 +455,7 @@ namespace RdioSharp
             if (!string.IsNullOrEmpty(domain)) postData.Add("domain", domain);
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            var deserialized = Deserialize(result, typeof(RdioResult<string>));
             return ((RdioResult<string>)deserialized).Result;
         }
 
@@ -456,7 +468,7 @@ namespace RdioSharp
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<RdioPlaylistSet>));
+            var deserialized = Deserialize(result, typeof(RdioResult<RdioPlaylistSet>));
             return ((RdioResult<RdioPlaylistSet>)deserialized).Result;
         }
 
@@ -479,16 +491,16 @@ namespace RdioSharp
             switch (type)
             {
                 case RdioType.Album:
-                    var albums = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+                    var albums = Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
                     return ((RdioResult<IList<RdioAlbum>>)albums).Result;
                 case RdioType.Artist:
-                    var artists = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioArtist>>));
+                    var artists = Deserialize(result, typeof(RdioResult<IList<RdioArtist>>));
                     return ((RdioResult<IList<RdioArtist>>)artists).Result;
                 case RdioType.Track:
-                    var tracks = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
+                    var tracks = Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
                     return ((RdioResult<IList<RdioTrack>>)tracks).Result;
                 case RdioType.Playlist:
-                    var playlists = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioPlaylist>>));
+                    var playlists = Deserialize(result, typeof(RdioResult<IList<RdioPlaylist>>));
                     return ((RdioResult<IList<RdioPlaylist>>)playlists).Result;
                 default:
                     return null;
@@ -510,7 +522,7 @@ namespace RdioSharp
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
+            var deserialized = Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
             return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
@@ -531,7 +543,7 @@ namespace RdioSharp
             if (count > 0) postData.Add("count", count.ToString());
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
+            var deserialized = Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
             return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
@@ -550,7 +562,7 @@ namespace RdioSharp
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
+            var deserialized = Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
             return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
@@ -571,7 +583,7 @@ namespace RdioSharp
             if (!string.IsNullOrEmpty(query)) postData.Add("query", query);
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
+            var deserialized = Deserialize(result, typeof(RdioResult<IList<RdioTrack>>));
             return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
@@ -587,7 +599,7 @@ namespace RdioSharp
                                };
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            var deserialized = Deserialize(result, typeof(RdioResult<string>));
             return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
@@ -603,7 +615,7 @@ namespace RdioSharp
                                };
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            var deserialized = Deserialize(result, typeof(RdioResult<string>));
             return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
@@ -622,7 +634,7 @@ namespace RdioSharp
                                };
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            var deserialized = Deserialize(result, typeof(RdioResult<string>));
             return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
@@ -644,7 +656,7 @@ namespace RdioSharp
             if (count > 0) postData.Add("count", count.ToString());
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<object>));
+            var deserialized = Deserialize(result, typeof(RdioResult<object>));
             var results = (Dictionary<string, object>)((RdioResult<object>)deserialized).Result;
             var searchResults = new List<object>((object[])results["results"]);
             return RdioFunctions.ConvertListToRdioResultSet(searchResults);
@@ -663,7 +675,7 @@ namespace RdioSharp
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<object>));
+            var deserialized = Deserialize(result, typeof(RdioResult<object>));
             var results = new List<object>((object[])((RdioResult<object>)deserialized).Result);
             return RdioFunctions.ConvertListToRdioResultSet(results);
         }
