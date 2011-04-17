@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -134,7 +134,7 @@ namespace RdioSharp
         /// </summary>
         private object Deserialize(string toDeserialize, Type type)
         {
-            return _serializer.Deserialize(toDeserialize, type);
+            return _serializer.Deserialize(_serializer, toDeserialize, type, 0);
         }
 
         #endregion
