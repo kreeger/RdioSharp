@@ -56,7 +56,7 @@
     <Compile Include="Models\RdioPlaylistSet.cs" />
     <Compile Include="Enum\RdioScope.cs" />
     <Compile Include="Models\RdioResult.cs" />
-    <Compile Include="Models\RdioSearchResult.cs" />
+    <Compile Include="Models\RdioResultSet.cs" />
     <Compile Include="Enum\RdioSortBy.cs" />
     <Compile Include="Models\RdioTrack.cs" />
     <Compile Include="Enum\RdioType.cs" />

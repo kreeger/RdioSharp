@@ -221,9 +221,10 @@ namespace RdioSharp
                                    {"method", "deletePlaylist"},
                                    {"playlist", playlist}
                                };
-            
+
             var result = MakeWebRequest(postData);
-            return bool.Parse(result);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<string>));
+            return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
         /// <summary>
@@ -243,7 +244,7 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.Get"/>
         /// </summary>
-        public IEnumerable<IRdioObject> Get(IEnumerable<string> keys, IEnumerable<string> extras = null)
+        public RdioResultSet Get(IEnumerable<string> keys, IEnumerable<string> extras = null)
         {
             var postData = new NameValueCollection
                                {
@@ -253,7 +254,9 @@ namespace RdioSharp
             if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
 
             var result = MakeWebRequest(postData);
-            return null;
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<object>));
+            var results = ((RdioResult<object>) deserialized).Result as Dictionary<string, object>;
+            return results != null ? RdioFunctions.ConvertDictionaryToRdioResultSet(results) : null;
         }
 
         /// <summary>
@@ -351,7 +354,27 @@ namespace RdioSharp
         public IEnumerable<IRdioObject> GetHeavyRotation(string user = null, RdioType type = RdioType.Album,
                                                          bool friends = false, int limit = 0)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getHeavyRotation"},
+                                   {"type", type.ToString()}
+                               };
+            if (!string.IsNullOrEmpty(user)) postData.Add("user", user);
+            if (friends) postData.Add("friends", friends.ToString());
+            if (limit > 0) postData.Add("limit", limit.ToString());
+
+            var result = MakeWebRequest(postData);
+            switch (type)
+            {
+                case RdioType.Artist:
+                    var artists = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioArtist>>));
+                    return ((RdioResult<IList<RdioArtist>>)artists).Result;
+                case RdioType.Album:
+                    var albums = _serializer.Deserialize(result, typeof(RdioResult<IList<RdioAlbum>>));
+                    return ((RdioResult<IList<RdioAlbum>>)albums).Result;
+                default:
+                    return null;
+            }
         }
 
         /// <summary>
@@ -379,7 +402,16 @@ namespace RdioSharp
         /// </summary>
         public IRdioObject GetObjectFromShortCode(string shortCode)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getObjectFromShortCode"},
+                                   {"short_code", shortCode}
+                               };
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<object>));
+            var results = (Dictionary<string, object>)((RdioResult<object>)deserialized).Result;
+            return RdioFunctions.ConvertDictionaryToRdioObject(results);
         }
 
         /// <summary>
@@ -387,7 +419,16 @@ namespace RdioSharp
         /// </summary>
         public IRdioObject GetObjectFromUrl(string url)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "getObjectFromUrl"},
+                                   {"url", url}
+                               };
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<object>));
+            var results = (Dictionary<string, object>)((RdioResult<object>)deserialized).Result;
+            return RdioFunctions.ConvertDictionaryToRdioObject(results);
         }
 
         /// <summary>
@@ -588,8 +629,8 @@ namespace RdioSharp
         /// <summary>
         /// <see cref="IRdioManager.Search"/>
         /// </summary>
-        public RdioSearchResult Search(string query, IList<RdioType> types, bool neverOr = true,
-                                       IList<string> extras = null, int start = 0, int count = 0)
+        public RdioResultSet Search(string query, IEnumerable<RdioType> types, bool neverOr = true,
+                                       IEnumerable<string> extras = null, int start = 0, int count = 0)
         {
             var postData = new NameValueCollection
                                {
@@ -598,21 +639,33 @@ namespace RdioSharp
                                    {"types", string.Join(",", types)}
                                };
             if (!neverOr) postData.Add("never_or", neverOr.ToString().ToLower());
-            if (extras != null && extras.Count > 0) postData.Add("extras", string.Join(",", extras));
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
             if (start > 0) postData.Add("start", start.ToString());
             if (count > 0) postData.Add("count", count.ToString());
 
             var result = MakeWebRequest(postData);
-            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<RdioSearchResult>));
-            return ((RdioResult<RdioSearchResult>)deserialized).Result;
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<object>));
+            var results = (Dictionary<string, object>)((RdioResult<object>)deserialized).Result;
+            var searchResults = new List<object>((object[])results["results"]);
+            return RdioFunctions.ConvertListToRdioResultSet(searchResults);
         }
 
         /// <summary>
         /// <see cref="IRdioManager.SearchSuggestions"/>
         /// </summary>
-        public IEnumerable<IRdioObject> SearchSuggestions(string query, IEnumerable<string> extras = null)
+        public RdioResultSet SearchSuggestions(string query, IEnumerable<string> extras = null)
         {
-            throw new NotImplementedException();
+            var postData = new NameValueCollection
+                               {
+                                   {"method", "searchSuggestions"},
+                                   {"query", query}
+                               };
+            if (extras != null && extras.Count() > 0) postData.Add("extras", string.Join(",", extras));
+
+            var result = MakeWebRequest(postData);
+            var deserialized = _serializer.Deserialize(result, typeof(RdioResult<object>));
+            var results = new List<object>((object[])((RdioResult<object>)deserialized).Result);
+            return RdioFunctions.ConvertListToRdioResultSet(results);
         }
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+
 using RdioSharp.Enum;
 using RdioSharp.Models;
 
@@ -32,10 +33,10 @@ namespace RdioSharp.Console
                                          manager.AccessKey, manager.AccessKeySecret);
             }
 
-            var results = manager.GetTopCharts(RdioType.Playlist).ToList();
-            foreach (var bit in results.Select(r => string.Format("{0}, Key: {1}", r.Name, r.Key)))
+            var rdio = manager.SearchSuggestions("Foo Fighters");
+            foreach (var result in rdio.Artists)
             {
-                System.Console.WriteLine(bit);
+                System.Console.WriteLine(result.Name);
             }
             //System.Console.WriteLine("Getting activity.");
             //var activity = manager.GetActivityStream(manager.CurrentUser().Key);

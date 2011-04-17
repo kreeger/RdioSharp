@@ -31,7 +31,7 @@ namespace RdioSharp.Models
         [DataMember]
         public string OwnerIcon { get; set; }
         [DataMember]
-        public string LastUpdated { get; set; }
+        public decimal LastUpdated { get; set; }
         [DataMember]
         public string ShortUrl { get; set; }
         [DataMember]

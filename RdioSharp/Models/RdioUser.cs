@@ -24,7 +24,7 @@ namespace RdioSharp.Models
         [DataMember]
         public string LastName { get; set; }
         [DataMember]
-        public long LibraryVersion { get; set; }
+        public int LibraryVersion { get; set; }
         [DataMember]
         public string Gender { get; set; }
         [DataMember(EmitDefaultValue = false, IsRequired = false)]
@@ -41,7 +41,7 @@ namespace RdioSharp.Models
         public string Name
         {
             get { return FirstName + " " + LastName; }
-            set { Name = value; }
+            set { return; }
         }
     }
 }

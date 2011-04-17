@@ -68,8 +68,8 @@ namespace RdioSharp
         /// </summary>
         /// <param name="keys">Required. A list of keys for the objects to fetch.</param>
         /// <param name="extras">Optional. A list of additional fields to return.</param>
-        /// <returns>A list of <see cref="IRdioObject"/>s where matches were found.</returns>
-        IEnumerable<IRdioObject> Get(IEnumerable<string> keys, IEnumerable<string> extras = null);
+        /// <returns>An object with 5 lists, one for each type of object that can be returned.</returns>
+        RdioResultSet Get(IEnumerable<string> keys, IEnumerable<string> extras = null);
 
         /// <summary>
         /// Get the activity events for a user, a user's friends, or everyone on Rdio. Does not require
@@ -280,9 +280,9 @@ namespace RdioSharp
         /// <param name="extras">Optional. A list of additional fields to return.</param>
         /// <param name="start">Optional. The offset of the first result to return.</param>
         /// <param name="count">Optional. The maxiumum number of results to return.</param>
-        /// <returns>A <see cref="RdioSearchResult"/> containing a list for each type of result found.</returns>
-        RdioSearchResult Search(string query, IList<RdioType> types, bool neverOr = true,
-                                IList<string> extras = null, int start = 0, int count = 0);
+        /// <returns>A <see cref="RdioResultSet"/> containing a list for each type of result found.</returns>
+        RdioResultSet Search(string query, IEnumerable<RdioType> types, bool neverOr = true,
+                             IEnumerable<string> extras = null, int start = 0, int count = 0);
 
         /// <summary>
         /// Match the supplied prefix against artists, albums, tracks and people in the Rdio system. Does not
@@ -291,6 +291,6 @@ namespace RdioSharp
         /// <param name="query">Required. The search prefix.</param>
         /// <param name="extras">Optional. A list of additional fields to return.</param>
         /// <returns>A list of <see cref="IRdioObject"/>s matching the search prefix.</returns>
-        IEnumerable<IRdioObject> SearchSuggestions(string query, IEnumerable<string> extras = null);
+        RdioResultSet SearchSuggestions(string query, IEnumerable<string> extras = null);
     }
 }

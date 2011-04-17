@@ -20,8 +20,8 @@ namespace RdioSharp.Models
         [DataMember]
         public string Type { get; set; }
         public RdioType RdioType { get { return RdioFunctions.ParseRdioType(Type); } }
-        [DataMember(Name = "Length")]
-        public int TrackCount { get; set; }
+        [DataMember]
+        public int Length { get; set; }
         [DataMember]
         public bool HasRadio { get; set; }
         [DataMember]
