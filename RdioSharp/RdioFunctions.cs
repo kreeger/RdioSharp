@@ -19,8 +19,14 @@ namespace RdioSharp
                 case "al": return RdioType.Album;
                 case "t": return RdioType.Track;
                 case "p": return RdioType.Playlist;
-                case "s": return RdioType.User;
-                default: return RdioType.Unknown;
+				case "s": return RdioType.User;
+				case "rr": return RdioType.ArtistRecommendationStation;
+				case "tr": return RdioType.ArtistStation;
+				case "h": return RdioType.NetworkHeavyRotationStation;
+				case "e": return RdioType.UserHeavyRotationStation;
+				case "c": return RdioType.UserCollectionStation;
+
+				default: return RdioType.Unknown;
             }
         }
 

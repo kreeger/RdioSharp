@@ -9,6 +9,10 @@
         Track,
         Playlist,
         User,
-        Unknown
+    	ArtistRecommendationStation,
+    	ArtistStation,
+    	HeavyRotationStation,
+    	UserCollectionStation,
+    	Unknown
     }
 }
