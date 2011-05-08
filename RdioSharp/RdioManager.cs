@@ -356,7 +356,7 @@ namespace RdioSharp
             if (!string.IsNullOrEmpty(user)) postData.Add("user", user);
             if (start > 0) postData.Add("start", start.ToString());
             if (count > 0) postData.Add("count", count.ToString());
-            if (sort != RdioSortBy.None) postData.Add("sort", sort.ToString());
+            if (sort != RdioSortBy.None) postData.Add("sort", getAPISortValue(sort));
             if (!string.IsNullOrEmpty(query)) postData.Add("query", query);
 
             var result = MakeWebRequest(postData);
@@ -364,7 +364,7 @@ namespace RdioSharp
             return ((RdioResult<IList<RdioAlbum>>)deserialized).Result;
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetHeavyRotation"/>
         /// </summary>
         public IEnumerable<RdioArtist> GetArtistsInCollection(string user = null, int start = 0, int count = 0,
@@ -377,7 +377,7 @@ namespace RdioSharp
             if (!string.IsNullOrEmpty(user)) postData.Add("user", user);
             if (start > 0) postData.Add("start", start.ToString());
             if (count > 0) postData.Add("count", count.ToString());
-            if (sort != RdioSortBy.None) postData.Add("sort", sort.ToString());
+            if (sort != RdioSortBy.None) postData.Add("sort", getAPISortValue(sort));
             if (!string.IsNullOrEmpty(query)) postData.Add("query", query);
 
             var result = MakeWebRequest(postData);
@@ -385,7 +385,7 @@ namespace RdioSharp
             return ((RdioResult<IList<RdioArtist>>)deserialized).Result;
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetHeavyRotation"/>
         /// </summary>
         public IEnumerable<IRdioObject> GetHeavyRotation(string user = null, RdioType type = RdioType.Album,
@@ -414,7 +414,7 @@ namespace RdioSharp
             }
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetNewReleases"/>
         /// </summary>
         public IEnumerable<RdioAlbum> GetNewReleases(RdioTimeframe timeframe = RdioTimeframe.None, int start = 0,
@@ -434,7 +434,7 @@ namespace RdioSharp
             return ((RdioResult<IList<RdioAlbum>>)deserialized).Result;
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetObjectFromShortCode"/>
         /// </summary>
         public IRdioObject GetObjectFromShortCode(string shortCode)
@@ -451,7 +451,7 @@ namespace RdioSharp
             return RdioFunctions.ConvertDictionaryToRdioObject(results);
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetObjectFromUrl"/>
         /// </summary>
         public IRdioObject GetObjectFromUrl(string url)
@@ -468,7 +468,7 @@ namespace RdioSharp
             return RdioFunctions.ConvertDictionaryToRdioObject(results);
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetPlaybackToken"/>
         /// </summary>
         public string GetPlaybackToken(string domain = null)
@@ -484,7 +484,7 @@ namespace RdioSharp
             return ((RdioResult<string>)deserialized).Result;
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetPlaylists"/>
         /// </summary>
         public RdioPlaylistSet GetPlaylists(IEnumerable<string> extras = null)
@@ -497,7 +497,7 @@ namespace RdioSharp
             return ((RdioResult<RdioPlaylistSet>)deserialized).Result;
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetTopCharts"/>
         /// </summary>
         public IEnumerable<IRdioObject> GetTopCharts(RdioType type, int start = 0, int count = 0,
@@ -532,7 +532,7 @@ namespace RdioSharp
             }
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetTracksForAlbumInCollection"/>
         /// </summary>
         public IEnumerable<RdioTrack> GetTracksForAlbumInCollection(string album, string user = null,
@@ -551,7 +551,7 @@ namespace RdioSharp
             return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetTracksForArtist"/>
         /// </summary>
         public IEnumerable<RdioTrack> GetTracksForArtist(string artist, bool appearsOn = false,
@@ -572,7 +572,7 @@ namespace RdioSharp
             return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetTracksForArtistInCollection"/>
         /// </summary>
         public IEnumerable<RdioTrack> GetTracksForArtistInCollection(string artist, string user = null,
@@ -591,7 +591,7 @@ namespace RdioSharp
             return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.GetTracksInCollection"/>
         /// </summary>
         public IEnumerable<RdioTrack> GetTracksInCollection(string user = null, int start = 0, int count = 0,
@@ -604,7 +604,7 @@ namespace RdioSharp
             if (!string.IsNullOrEmpty(user)) postData.Add("user", user);
             if (start > 0) postData.Add("start", start.ToString());
             if (count > 0) postData.Add("count", count.ToString());
-            if (sort != RdioSortBy.None) postData.Add("sort", sort.ToString());
+			if (sort != RdioSortBy.None) postData.Add("sort", getAPISortValue(sort));
             if (!string.IsNullOrEmpty(query)) postData.Add("query", query);
 
             var result = MakeWebRequest(postData);
@@ -612,7 +612,7 @@ namespace RdioSharp
             return ((RdioResult<IList<RdioTrack>>)deserialized).Result;
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.RemoveFriend"/>
         /// </summary>
         public bool RemoveFriend(string user)
@@ -628,7 +628,7 @@ namespace RdioSharp
             return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.RemoveFromCollection"/>
         /// </summary>
         public bool RemoveFromCollection(IEnumerable<string> keys)
@@ -644,7 +644,7 @@ namespace RdioSharp
             return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.RemoveFromPlaylist"/>
         /// </summary>
         public bool RemoveFromPlaylist(string playlist, IEnumerable<string> tracks, int index = 0, int count = 0)
@@ -663,7 +663,7 @@ namespace RdioSharp
             return bool.Parse(((RdioResult<string>)deserialized).Result);
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.Search"/>
         /// </summary>
         public RdioResultSet Search(string query, IEnumerable<RdioType> types, bool neverOr = true,
@@ -687,7 +687,7 @@ namespace RdioSharp
             return RdioFunctions.ConvertListToRdioResultSet(searchResults);
         }
 
-        /// <summary>
+    	/// <summary>
         /// <see cref="IRdioManager.SearchSuggestions"/>
         /// </summary>
         public RdioResultSet SearchSuggestions(string query, IEnumerable<string> extras = null)
@@ -705,7 +705,7 @@ namespace RdioSharp
             return RdioFunctions.ConvertListToRdioResultSet(results);
         }
 
-        #endregion
+    	#endregion
 
         #region Private methods
 
@@ -765,7 +765,7 @@ namespace RdioSharp
             return DoWebRequest(outUrl + querystring, postString);
         }
 
-        /// <summary>
+    	/// <summary>
         /// Web Request Wrapper
         /// </summary>
         /// <param name="url">Full url to the web resource</param>
@@ -820,6 +820,14 @@ namespace RdioSharp
             return responseData;
         }
 
-        #endregion
+    	private static string getAPISortValue(RdioSortBy sort)
+    	{
+    		if (sort == RdioSortBy.DateAdded) return "dateAdded";
+    		if (sort == RdioSortBy.PlayCount) return "playCount";
+
+    		return sort.ToString().ToLowerInvariant();
+    	}
+
+    	#endregion
     }
 }

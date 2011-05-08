@@ -33,6 +33,14 @@ namespace RdioSharp.Console
         	var user = manager.CurrentUser(new[] {"isSubscriber", "isTrial", "isUnlimited"});
         	System.Console.WriteLine("Current user key is : {0}.\nSubscriber: {1}\nUnlimited: {2}\nTrial: {3}", user.Key, user.IsSubscriber, user.IsUnlimited, user.IsTrial);
 
+			//HMM not sure if this sort type from Rdio is actually working - KevM
+			System.Console.WriteLine("Get top 10 artists in user's collection by play count.");
+        	var artists = manager.GetArtistsInCollection(user.Key, 0, 10, RdioSortBy.PlayCount);
+        	foreach (var artist in artists)
+        	{
+				System.Console.WriteLine("Artist: '{0}' (key: {1})", artist.Name, artist.Key);
+        	}
+
             System.Console.WriteLine("Getting activity stream for current user.");
             var rdio = manager.GetActivityStream(user.Key);
             foreach (var item in rdio.Updates)
