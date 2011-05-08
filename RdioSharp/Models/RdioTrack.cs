@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 using RdioSharp.Enum;
 
@@ -17,6 +18,8 @@ namespace RdioSharp.Models
         public string Icon { get; set; }
         [DataMember]
         public string BaseIcon { get; set; }
+		[DataMember]
+		public string BigIcon { get; set; }
         [DataMember]
         public string Type { get; set; }
         public RdioType RdioType { get { return RdioFunctions.ParseRdioType(Type); } }
@@ -36,7 +39,9 @@ namespace RdioSharp.Models
         public bool IsExplicit { get; set; }
         [DataMember]
         public bool IsClean { get; set; }
-        [DataMember]
+		[DataMember]
+		public bool IsOnCompilation { get; set; }
+		[DataMember]
         public string Price { get; set; }
         [DataMember]
         public bool CanStream { get; set; }
@@ -60,7 +65,7 @@ namespace RdioSharp.Models
         public bool CanDownloadAlbumOnly { get; set; }
         [DataMember]
         public int PlayCount { get; set; }
-		
-		internal RdioTrack() { }
+
+    	internal RdioTrack() { }
     }
 }

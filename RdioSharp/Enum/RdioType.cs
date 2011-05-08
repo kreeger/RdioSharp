@@ -1,6 +1,6 @@
 ﻿namespace RdioSharp.Enum
 {
-    public enum RdioType
+	public enum RdioType
     {
         Artist,
 		CollectionArtist,
@@ -11,7 +11,8 @@
         User,
     	ArtistRecommendationStation,
     	ArtistStation,
-    	HeavyRotationStation,
+    	NetworkHeavyRotationStation,
+    	UserHeavyRotationStation,
     	UserCollectionStation,
     	Unknown
     }
