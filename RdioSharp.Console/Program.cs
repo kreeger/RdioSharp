@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using RdioSharp.Enum;
 
 namespace RdioSharp.Console
 {
@@ -28,8 +29,12 @@ namespace RdioSharp.Console
                                          manager.AccessKey, manager.AccessKeySecret);
             }
 
-            System.Console.WriteLine("Getting activity stream.");
-            var rdio = manager.GetActivityStream("s1250");
+			System.Console.WriteLine("Getting user.");
+        	var user = manager.CurrentUser(new[] {"isSubscriber", "isTrial", "isUnlimited"});
+        	System.Console.WriteLine("Current user key is : {0}.\nSubscriber: {1}\nUnlimited: {2}\nTrial: {3}", user.Key, user.IsSubscriber, user.IsUnlimited, user.IsTrial);
+
+            System.Console.WriteLine("Getting activity stream for current user.");
+            var rdio = manager.GetActivityStream(user.Key);
             foreach (var item in rdio.Updates)
             {
                 System.Console.WriteLine(string.Format("Update by {0} at {1}", item.Owner.Name, item.Owner.Key));
