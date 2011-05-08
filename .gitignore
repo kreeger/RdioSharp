@@ -5,3 +5,4 @@ RdioSharp*/bin*
 RdioSharp*/obj*
 RdioSharp*/*.pidb
 *.userprefs
+**/*.user
