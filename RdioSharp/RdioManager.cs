@@ -294,7 +294,7 @@ namespace RdioSharp
                                {
                                    {"method", "getActivityStream"},
                                    {"user", user},
-                                   {"scope", scope.ToString()}
+                                   {"scope", scope.ToString().ToLowerInvariant()}
                                };
             if (lastId.Boolify()) postData.Add("last_id", lastId.ToString());
 
