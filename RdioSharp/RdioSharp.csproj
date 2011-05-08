@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="Enum\RdioTimeframe.cs" />
     <Compile Include="IRdioManager.cs" />
     <Compile Include="Models\IRdioBaseObject.cs" />

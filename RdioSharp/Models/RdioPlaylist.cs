@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 using RdioSharp.Enum;
 
@@ -15,6 +16,8 @@ namespace RdioSharp.Models
         public string Url { get; set; }
         [DataMember]
         public string Icon { get; set; }
+		[DataMember]
+		public string BigIcon { get; set; }
         [DataMember]
         public string Type { get; set; }
         public RdioType RdioType { get { return RdioFunctions.ParseRdioType(Type); } }
@@ -36,5 +39,7 @@ namespace RdioSharp.Models
         public string ShortUrl { get; set; }
         [DataMember]
         public string EmbedUrl { get; set; }
+		[DataMember(EmitDefaultValue = false, IsRequired = false)]
+		public IList<string> TrackKeys { get; set; }
     }
 }

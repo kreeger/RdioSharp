@@ -19,7 +19,9 @@ namespace RdioSharp.Models
         public string Icon { get; set; }
         [DataMember]
         public string BaseIcon { get; set; }
-        [DataMember]
+		[DataMember]
+		public string BigIcon { get; set; }
+		[DataMember]
         public string Type { get; set; }
         public RdioType RdioType { get { return RdioFunctions.ParseRdioType(Type); } }
         [DataMember]
@@ -32,7 +34,9 @@ namespace RdioSharp.Models
         public bool IsExplicit { get; set; }
         [DataMember]
         public bool IsClean { get; set; }
-        [DataMember(Name = "Length")]
+		[DataMember]
+		public bool IsCompilation { get; set; }
+		[DataMember(Name = "Length")]
         public int Length { get; set; }
         [DataMember]
         public string Price { get; set; }

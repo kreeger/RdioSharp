@@ -30,7 +30,7 @@ namespace RdioSharp
             }
         }
 
-        public static IRdioObject ConvertDictionaryToRdioObject(IDictionary<string, object> d,
+		public static IRdioObject ConvertDictionaryToRdioObject(IDictionary<string, object> d,
                                                                 RdioType type = RdioType.Unknown)
         {
             IRdioObject rdioObject = null;
@@ -53,6 +53,7 @@ namespace RdioSharp
                         Icon = (string)d["icon"],
                         IsClean = (bool)d["isClean"],
                         IsExplicit = (bool)d["isExplicit"],
+						IsCompilation = d.GetOptionalKey<bool>("isCompilation"),
                         Key = (string)d["key"],
                         Length = (int)d["length"],
                         Name = (string)d["name"],
@@ -65,7 +66,9 @@ namespace RdioSharp
                     object keys;
                     if (d.TryGetValue("trackKeys", out keys))
                         album.TrackKeys = new List<object>((object[])keys).Cast<string>().ToList();
-                    rdioObject = album;
+					album.BigIcon = d.GetOptionalKey<string>("bigIcon");
+
+					rdioObject = album;
                     break;
                 case RdioType.CollectionArtist:
                 case RdioType.Artist:
@@ -79,12 +82,11 @@ namespace RdioSharp
                         ShortUrl = (string)d["shortUrl"],
                         Length = (int)d["length"],
                         Type = (string)d["type"],
-                        Url = (string)d["url"]
+                        Url = (string)d["url"],
+						AlbumCount = d.GetOptionalKey<int>("albumCount")
                     };
-                    object albumCount;
-                    if (d.TryGetValue("albumCount", out albumCount))
-                        artist.AlbumCount = (int)albumCount;
-                    rdioObject = artist;
+
+					rdioObject = artist;
                     break;
                 case RdioType.Playlist:
                     var playlist = new RdioPlaylist
@@ -104,7 +106,12 @@ namespace RdioSharp
                         Type = (string)d["type"],
                         Url = (string)d["url"]
                     };
-                    rdioObject = playlist;
+                    object playlistTrackKeys;
+                    if (d.TryGetValue("trackKeys", out playlistTrackKeys))
+                        playlist.TrackKeys = new List<object>((object[])playlistTrackKeys).Cast<string>().ToList();
+					playlist.BigIcon = d.GetOptionalKey<string>("bigIcon");
+
+					rdioObject = playlist;
                     break;
                 case RdioType.Track:
                     var track = new RdioTrack
@@ -128,6 +135,7 @@ namespace RdioSharp
                         Icon = (string)d["icon"],
                         IsClean = (bool)d["isClean"],
                         IsExplicit = (bool)d["isExplicit"],
+						IsOnCompilation = d.GetOptionalKey<bool>("isOnCompilation"),
                         Key = (string)d["key"],
                         Name = (string)d["name"],
                         Price = (string)d["price"],
@@ -135,9 +143,9 @@ namespace RdioSharp
                         Type = (string)d["type"],
                         Url = (string)d["url"]
                     };
-                    object playCount;
-                    if (d.TryGetValue("playCount", out playCount))
-                        track.PlayCount = (int)playCount;
+                    track.PlayCount = d.GetOptionalKey<int>("playCount");
+					track.BigIcon = d.GetOptionalKey<string>("bigIcon");
+
                     rdioObject = track;
                     break;
                 case RdioType.User:
@@ -151,20 +159,19 @@ namespace RdioSharp
                         LastName = (string)d["lastName"],
                         LibraryVersion = (int)d["libraryVersion"],
                         Type = (string)d["type"],
-                        Url = (string)d["url"]
+                        Url = (string)d["url"],
+						DisplayName = d.GetOptionalKey<string>("displayName"),
+						LastSongPlayed = d.GetOptionalKey<string>("lastSongPlayed"),
+						LastSongPlayTime = d.GetOptionalKey<DateTime>("lastSongPlayTime"),
+						TrackCount = d.GetOptionalKey<int>("trackCount"),
+						Username = d.GetOptionalKey<string>("username")
                     };
-                    object displayName, lastSongPlayed, lastSongPlayTime, trackCount, username;
-                    if (d.TryGetValue("displayName", out displayName))
-                        user.DisplayName = (string)displayName;
-                    if (d.TryGetValue("lastSongPlayed", out lastSongPlayed))
-                        user.LastSongPlayed = (string)lastSongPlayed;
-                    if (d.TryGetValue("lastSongPlayTime", out lastSongPlayTime))
-                        user.LastSongPlayTime = (DateTime)lastSongPlayTime;
-                    if (d.TryGetValue("trackCount", out trackCount))
-                        user.TrackCount = (int)trackCount;
-                    if (d.TryGetValue("username", out username))
-                        user.Username = (string)username;
-                    rdioObject = user;
+					
+                    user.IsSubscriber = d.GetOptionalKey<bool>("isSubscriber");
+					user.IsUnlimited = d.GetOptionalKey<bool>("isUnlimited");
+					user.IsTrial = d.GetOptionalKey<bool>("isTrial");
+
+            		rdioObject = user;
                     break;
                 default:
                     break;
@@ -172,7 +179,7 @@ namespace RdioSharp
             return rdioObject;
         }
 
-        public static RdioResultSet ConvertListToRdioResultSet(IEnumerable<object> results)
+		public static RdioResultSet ConvertListToRdioResultSet(IEnumerable<object> results)
         {
             var resultSet = new RdioResultSet();
             foreach (var result in results.Cast<IDictionary<string, object>>())
@@ -204,7 +211,7 @@ namespace RdioSharp
             return resultSet;
         }
 
-        public static RdioResultSet ConvertDictionaryToRdioResultSet(IEnumerable<KeyValuePair<string, object>> results)
+		public static RdioResultSet ConvertDictionaryToRdioResultSet(IEnumerable<KeyValuePair<string, object>> results)
         {
             var resultSet = new RdioResultSet();
             foreach (var kvp in results)
@@ -237,7 +244,7 @@ namespace RdioSharp
             return resultSet;
         }
 
-        public static RdioActivityStream ConvertDictionaryToRdioActivityStream(IDictionary<string, object> d)
+		public static RdioActivityStream ConvertDictionaryToRdioActivityStream(IDictionary<string, object> d)
         {
             var stream = new RdioActivityStream
                              {
@@ -257,7 +264,7 @@ namespace RdioSharp
                                        RdioUser,
                                    UpdateTypeId = (int) u["update_type"]
                                };
-                object albums, comment, reviewedItem;
+                object albums, reviewedItem;
                 if (u.TryGetValue("albums", out albums))
                 {
                     item.Albums = new List<RdioAlbum>();
@@ -267,8 +274,7 @@ namespace RdioSharp
                         item.Albums.Add(ConvertDictionaryToRdioObject(a) as RdioAlbum);
                     }
                 }
-                if (u.TryGetValue("comment", out comment))
-                    item.Comment = (string)comment;
+            	item.Comment = u.GetOptionalKey<string>("comment");
                 if (u.TryGetValue("reviewedItem", out reviewedItem))
                     item.ReviewedItem = ConvertDictionaryToRdioObject((IDictionary<string, object>) reviewedItem);
 
@@ -277,24 +283,24 @@ namespace RdioSharp
             return stream;
         }
 
-        public static DateTime ParseStringToDateTime(string input)
+		public static DateTime ParseStringToDateTime(string input)
         {
             var dateList = input.Split('-');
             return new DateTime(int.Parse(dateList[0]), int.Parse(dateList[1]), int.Parse(dateList[2]));
         }
 
-        public static DateTime DeUnixify(this double timestamp)
+		public static DateTime DeUnixify(this double timestamp)
         {
             var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
             return origin.AddSeconds(timestamp);
         }
 
-        public static string Pluralize(this RdioType type)
+		public static string Pluralize(this RdioType type)
         {
             return type + "s";
         }
 
-        public static bool Boolify(this object obj)
+		public static bool Boolify(this object obj)
         {
             if (obj == null) return false;
             if (obj is int && (int)obj == 0) return false;

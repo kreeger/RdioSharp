@@ -37,6 +37,12 @@ namespace RdioSharp.Models
         public int TrackCount { get; set; }
         [DataMember(EmitDefaultValue = false, IsRequired = false)]
         public DateTime LastSongPlayTime { get; set; }
+		[DataMember]
+		public bool IsSubscriber { get; set; }
+		[DataMember]
+		public bool IsUnlimited{ get; set; }
+		[DataMember]
+		public bool IsTrial{ get; set; }
 
         public string Name
         {
